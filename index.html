@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Kast Tracker"/>
+<meta name="theme-color" content="#0a0f1e"/>
+<title>Kast Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0f1e;--bg2:#111827;--bg3:#1a2235;--bg4:#0d1629;
+  --blue:#2563eb;--blue2:#3b82f6;--cyan:#06b6d4;
+  --green:#10b981;--green2:#34d399;
+  --danger:#ef4444;--warn:#f59e0b;
+  --text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8;
+  --border:#1e293b;--border2:#2d3f5c;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100%;padding-top:var(--safe-top);}
+
+/* HEADER */
+#header{background:linear-gradient(135deg,#0d1b3e,#1a2d5a);border-bottom:1px solid var(--border2);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.hdr-left{display:flex;align-items:center;gap:10px;}
+.hdr-icon{width:34px;height:34px;background:var(--blue);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.hdr-title{font-size:16px;font-weight:800;}
+.hdr-back{display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--blue2);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;padding:0;}
+.hdr-breadcrumb{font-size:11px;color:var(--muted2);margin-top:2px;}
+.btn-add{background:var(--blue);color:#fff;border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + var(--safe-bottom));}
+
+/* CARDS - Project list */
+.card{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;margin:12px;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.card:active{border-color:var(--blue2);}
+.card-hdr{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:15px;font-weight:800;color:var(--text);}
+.card-sub{font-size:11px;color:var(--muted2);margin-top:3px;}
+.card-pct{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--cyan);}
+.prog-wrap{height:5px;background:var(--border);}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .4s;}
+.card-footer{padding:10px 16px;background:var(--bg3);display:flex;align-items:center;justify-content:space-between;}
+.card-footer-txt{font-size:11px;color:var(--muted2);}
+.icon-btn{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.icon-btn-del{background:rgba(239,68,68,.12);color:var(--danger);}
+.icon-btn-edit{background:rgba(37,99,235,.12);color:var(--blue2);}
+
+/* KAST LIST inside project */
+.kast-item{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;margin:10px 12px;overflow:hidden;cursor:pointer;}
+.kast-item-hdr{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#162040,#1a2d4a);}
+.kast-no{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--cyan);}
+.kast-naam{font-size:11px;color:var(--muted2);margin-top:2px;}
+
+/* PANEL inside kast */
+.panel-block{margin:0;border-top:1px solid var(--border);}
+.panel-hdr{padding:8px 14px;background:var(--bg3);display:flex;align-items:center;justify-content:space-between;}
+.panel-prefix{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--warn);}
+.panel-pct{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2);}
+
+/* TABLE */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tbl-scroll::-webkit-scrollbar{display:none;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+thead th{padding:7px 8px;text-align:center;font-size:9px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border);border-right:1px solid var(--border);background:var(--bg4);white-space:nowrap;}
+th.th-k{text-align:left;min-width:90px;}
+td{padding:6px 8px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:middle;}
+td:last-child,th:last-child{border-right:none;}
+tr:last-child td{border-bottom:none;}
+.td-k{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text);}
+.td-c{text-align:center;padding:5px;}
+.td-p{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;}
+.chk{width:26px;height:26px;border-radius:6px;border:2px solid var(--border2);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;transition:all .1s;}
+.chk.on{background:var(--green);border-color:var(--green);}.chk.locked{opacity:.35;cursor:not-allowed;}
+
+/* TOTALS */
+.kast-total{padding:8px 14px;background:var(--bg3);display:flex;justify-content:space-between;border-top:1px solid var(--border2);}
+.kt-lbl{font-size:10px;font-weight:700;color:var(--muted2);}
+.kt-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--green2);}
+
+/* EMPTY */
+.empty{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-ico{font-size:40px;margin-bottom:12px;opacity:.4;}
+.empty-ttl{font-size:14px;font-weight:700;color:var(--muted2);margin-bottom:6px;}
+
+/* SHEET */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:100;display:flex;align-items:flex-end;}
+.sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px calc(24px + var(--safe-bottom));border-top:1px solid var(--border2);}
+.sh-handle{width:40px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 16px;}
+.sh-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.sh-sub{font-size:12px;color:var(--muted2);margin-bottom:14px;}
+.lbl{display:block;font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;margin-top:12px;}
+.inp{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:11px 13px;color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;}
+.inp-mono{font-family:'JetBrains Mono',monospace;}
+.inp:focus{border-color:var(--blue2);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;}
+.aralık-blok{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;margin-top:10px;}
+.aralık-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.aralık-lbl{font-size:11px;font-weight:700;color:var(--cyan);}
+.aralık-del{background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px;padding:0;}
+.preview{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);line-height:1.8;min-height:36px;}
+.btn-add-aralık{width:100%;background:var(--bg3);border:1px dashed var(--border2);color:var(--muted2);border-radius:10px;padding:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px;}
+.btn-p{width:100%;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:14px;}
+.btn-s{width:100%;background:var(--bg3);color:var(--muted2);border:1px solid var(--border2);border-radius:12px;padding:11px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:8px;}
+
+/* BADGE */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-green{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:var(--green2);}
+.badge-blue{background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);color:var(--blue2);}
+.badge-warn{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--warn);}
+
+/* SECTIONS */
+.section-hdr{padding:12px 16px 4px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div class="hdr-left">
+      <div class="hdr-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      </div>
+      <div>
+        <div class="hdr-title" id="hdr-title">Kast Tracker</div><div id="sync-status" style="font-size:9px;color:var(--muted2);margin-top:1px">Laden...</div>
+        <div id="hdr-bread" style="display:none"></div>
+      </div>
+    </div>
+    <div id="hdr-right">
+      <button class="btn-add" onclick="openAddProj()">+ Project</button>
+    </div>
+  </div>
+  <div id="content"></div>
+</div>
+<script>
+var COLS=[
+  {key:'ka',label:'Koper Aangelegd'},
+  {key:'om',label:'Outlet montage'},
+  {key:'pm',label:'Patchkast montage'},
+  {key:'km',label:'Koper meten'}
+];
+
+// --- DB ---
+function dbGet(){try{return JSON.parse(localStorage.getItem('kt3')||'[]');}catch(e){return[];}}
+function dbSet(d){localStorage.setItem('kt3',JSON.stringify(d));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function pad(n,len){var s=String(n);while(s.length<len)s='0'+s;return s;}
+
+// --- PCT ---
+function kabelPct(k){
+  var done=COLS.filter(function(c){return k.checks&&k.checks[c.key];}).length;
+  return Math.round(done/COLS.length*100);
+}
+function kastPct(kast){
+  var all=[];
+  (kast.panels||[]).forEach(function(p){(p.kabels||[]).forEach(function(k){all.push(k);});});
+  if(!all.length)return 0;
+  return Math.round(all.reduce(function(s,k){return s+kabelPct(k);},0)/all.length);
+}
+function projPct(proj){
+  var kasten=proj.kasten||[];
+  if(!kasten.length)return 0;
+  var sum=kasten.reduce(function(s,k){return s+kastPct(k);},0);
+  return Math.round(sum/kasten.length);
+}
+function projKabelCount(proj){
+  var n=0;(proj.kasten||[]).forEach(function(k){(k.panels||[]).forEach(function(p){n+=(p.kabels||[]).length;});});
+  return n;
+}
+function kastKabelCount(kast){
+  var n=0;(kast.panels||[]).forEach(function(p){n+=(p.kabels||[]).length;});return n;
+}
+
+// --- NAVIGATION STATE ---
+var VIEW={level:'projects',projIdx:null,kastIdx:null};
+
+function setView(level,pi,ki){
+  VIEW.level=level;VIEW.projIdx=pi!==undefined?pi:null;VIEW.kastIdx=ki!==undefined?ki:null;
+  updateHeader();render();
+}
+
+function updateHeader(){
+  var d=dbGet();
+  var t=document.getElementById('hdr-title');
+  var b=document.getElementById('hdr-bread');
+  var r=document.getElementById('hdr-right');
+  if(VIEW.level==='projects'){
+    t.textContent='Kast Tracker';
+    b.style.display='none';
+    r.innerHTML='<button class="btn-add" onclick="openAddProj()">+ Project</button>';
+  } else if(VIEW.level==='kasten'){
+    var proj=d[VIEW.projIdx];
+    t.textContent=proj.naam;
+    b.style.display='block';
+    b.innerHTML='<button class="hdr-back" onclick="setView(\'projects\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Terug</button>';
+    r.innerHTML='<button class="btn-add" onclick="openAddKast()">+ Kast</button>&nbsp;<button onclick="exportPDF()" style="background:#1e3a5f;color:#7dd3fc;border:1px solid #2d5a8a;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">PDF</button>';
+  } else if(VIEW.level==='kast'){
+    var proj2=d[VIEW.projIdx];var kast=proj2.kasten[VIEW.kastIdx];
+    t.textContent=kast.no+(kast.naam?' · '+kast.naam:'');
+    b.style.display='block';
+    b.innerHTML='<button class="hdr-back" onclick="setView(\'kasten\','+VIEW.projIdx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Terug</button>';
+    r.innerHTML='<button class="btn-add" onclick="openAddPanel()">+ Panel</button>&nbsp;<button onclick="exportPDF()" style="background:#1e3a5f;color:#7dd3fc;border:1px solid #2d5a8a;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">PDF</button>';
+  }
+}
+
+// --- RENDER ---
+function render(){
+  if(VIEW.level==='projects')renderProjects();
+  else if(VIEW.level==='kasten')renderKasten();
+  else if(VIEW.level==='kast')renderKast();
+}
+
+function pctBadge(pct){
+  var cls=pct>=100?'badge-green':pct>0?'badge-blue':'';
+  return '<span class="badge '+cls+'">'+pct+'%</span>';
+}
+
+function renderProjects(){
+  var projs=dbGet();
+  var ct=document.getElementById('content');
+  if(!projs.length){
+    ct.innerHTML='<div class="empty"><div class="empty-ico">🏗️</div><div class="empty-ttl">Nog geen projecten</div><div style="font-size:12px;color:var(--muted)">Voeg je eerste project toe</div></div>';
+    return;
+  }
+  ct.innerHTML='<div class="section-hdr">Projecten ('+projs.length+')</div>'+projs.map(function(proj,pi){
+    var pct=projPct(proj);
+    var nk=(proj.kasten||[]).length;
+    var nb=projKabelCount(proj);
+    return'<div class="card" onclick="setView(\'kasten\','+pi+')">'
+      +'<div class="card-hdr">'
+        +'<div><div class="card-title">'+proj.naam+'</div><div class="card-sub">'+nk+' kasten · '+nb+' kabels</div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px" onclick="event.stopPropagation()">'
+          +pctBadge(pct)
+          +'<button class="icon-btn icon-btn-del" onclick="delProj('+pi+')">🗑</button>'
+        +'</div>'
+      +'</div>'
+      +'<div class="prog-wrap"><div class="prog-bar" style="width:'+pct+'%"></div></div>'
+      +'</div>';
+  }).join('');
+}
+
+function renderKasten(){
+  var d=dbGet();
+  var proj=d[VIEW.projIdx];
+  var kasten=proj.kasten||[];
+  var ct=document.getElementById('content');
+  if(!kasten.length){
+    ct.innerHTML='<div class="empty"><div class="empty-ico">🗄️</div><div class="empty-ttl">Nog geen kasten</div><div style="font-size:12px;color:var(--muted)">Voeg de eerste kast toe</div></div>';
+    return;
+  }
+  ct.innerHTML='<div class="section-hdr">Kasten in '+proj.naam+' ('+kasten.length+')</div>'+kasten.map(function(kast,ki){
+    var pct=kastPct(kast);
+    var nb=kastKabelCount(kast);
+    var np=(kast.panels||[]).length;
+    return'<div class="kast-item" onclick="setView(\'kast\','+VIEW.projIdx+','+ki+')">'
+      +'<div class="kast-item-hdr">'
+        +'<div>'
+          +'<div class="kast-no">'+kast.no+'</div>'
+          +(kast.naam?'<div class="kast-naam">'+kast.naam+'</div>':'')
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px" onclick="event.stopPropagation()">'
+          +'<span style="font-size:10px;color:var(--muted2)">'+np+' panels · '+nb+' kabels</span>'
+          +pctBadge(pct)
+          +'<button class="icon-btn icon-btn-del" onclick="delKast('+ki+')">🗑</button>'
+        +'</div>'
+      +'</div>'
+      +'<div class="prog-wrap"><div class="prog-bar" style="width:'+pct+'%"></div></div>'
+      +'</div>';
+  }).join('');
+}
+
+function renderKast(){
+  var d=dbGet();
+  var kast=d[VIEW.projIdx].kasten[VIEW.kastIdx];
+  var panels=kast.panels||[];
+  var ct=document.getElementById('content');
+  if(!panels.length){
+    ct.innerHTML='<div class="empty"><div class="empty-ico">🔌</div><div class="empty-ttl">Nog geen panels</div><div style="font-size:12px;color:var(--muted)">Voeg een panel toe via de + knop</div></div>';
+    return;
+  }
+
+  var totalKabels=0;var totalDone=0;
+  panels.forEach(function(p){(p.kabels||[]).forEach(function(k){totalKabels++;if(kabelPct(k)===100)totalDone++;});});
+
+  ct.innerHTML=panels.map(function(panel,pi){
+    var kb=panel.kabels||[];
+    var pdone=kb.filter(function(k){return kabelPct(k)===100;}).length;
+    var ppct=kb.length?Math.round(kb.reduce(function(s,k){return s+kabelPct(k);},0)/kb.length):0;
+
+    var rows=kb.map(function(kabel,ji){
+      var kp=kabelPct(kabel);
+      var kc=kp===100?'var(--green2)':kp>0?'var(--cyan)':'var(--muted)';
+      var cells=COLS.map(function(col){
+        var on=kabel.checks&&kabel.checks[col.key];
+        var locked=false;
+        if((col.key==='om'||col.key==='pm')&&!(kabel.checks&&kabel.checks['ka']))locked=true;
+        if(col.key==='km'&&(!(kabel.checks&&kabel.checks['om'])||!(kabel.checks&&kabel.checks['pm'])))locked=true;
+        var cls='chk'+(on?' on':locked?' locked':'');
+        var icon=on?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+          :locked?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':'';
+        return'<td class="td-c"><div class="'+cls+'" data-pi="'+pi+'" data-ji="'+ji+'" data-col="'+col.key+'" onclick="tgl(this)">'+icon+'</div></td>';
+      }).join('');
+      return'<tr><td class="td-k">'+kabel.no+'</td>'+cells+'<td class="td-p" data-pi="'+pi+'" data-ji="'+ji+'" style="color:'+kc+'">'+kp+'%</td></tr>';
+    }).join('');
+
+    var isOpen=panel.open!==false;
+    var arrow=isOpen?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg>';
+    return'<div class="panel-block">'
+      +'<div class="panel-hdr" onclick="togglePanel('+pi+')" style="cursor:pointer">'
+        +'<div style="display:flex;align-items:center;gap:10px">'
+          +'<span style="color:var(--muted2)">'+arrow+'</span>'
+          +'<span class="panel-prefix">Panel '+panel.prefix+'</span>'
+          +'<span style="font-size:10px;color:var(--muted2)">'+kb.length+' kabels</span>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px" onclick="event.stopPropagation()">'
+          +'<span class="panel-pct" data-pi="'+pi+'">'+pdone+'/'+kb.length+' · '+ppct+'%</span>'
+          +'<button onclick="event.stopPropagation();openPanelSettings('+pi+')" style="background:rgba(100,116,139,.15);border:none;color:var(--muted2);cursor:pointer;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>'
+        +'</div>'
+      +'</div>'
+      +(isOpen?'<div class="tbl-scroll"><table>'
+        +'<thead><tr>'
+          +'<th class="th-k">Kabel</th>'
+          +COLS.map(function(c){return'<th>'+c.label+'</th>';}).join('')
+          +'<th>%</th>'
+        +'</tr></thead>'
+        +'<tbody>'+rows+'</tbody>'
+      +'</table></div>':'')
+      +'</div>';
+  }).join('')
+  +'<div class="kast-total">'
+    +'<span class="kt-lbl">TOTAAL</span>'
+    +'<span class="kt-val">'+totalDone+'/'+totalKabels+' voltooid · '+kastPct(kast)+'%</span>'
+  +'</div>';
+}
+
+// --- TOGGLE CHECK ---
+function tgl(el){
+  var pi=+el.dataset.pi,ji=+el.dataset.ji,col=el.dataset.col;
+  var d=dbGet();var kast=d[VIEW.projIdx].kasten[VIEW.kastIdx];
+  var k=kast.panels[pi].kabels[ji];if(!k.checks)k.checks={};
+  var turning_on=!k.checks[col];
+  if(turning_on){
+    if((col==='om'||col==='pm')&&!k.checks['ka']){showAlert('Eerste Koper Aangelegd afvinken!');return;}
+    if(col==='km'&&(!k.checks['om']||!k.checks['pm'])){showAlert('Eerst Outlet montage en Patchkast montage afvinken!');return;}
+  }
+  if(!turning_on){
+    if(col==='ka'){k.checks['om']=false;k.checks['pm']=false;k.checks['km']=false;}
+    if(col==='om'||col==='pm'){k.checks['km']=false;}
+  }
+  k.checks[col]=turning_on;
+  dbSet(d);
+  // Update only this row's checkboxes without full re-render
+  updateKabelRow(pi,ji,k);
+}
+
+function showAlert(msg){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var box=document.createElement('div');
+  box.style.cssText='background:#1a2235;border:1px solid #2d3f5c;border-radius:16px;padding:24px;max-width:300px;width:100%;text-align:center;';
+  var msg_el=document.createElement('div');msg_el.style.cssText='font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:16px;';msg_el.textContent=msg;
+  var btn=document.createElement('button');btn.textContent='OK';
+  btn.style.cssText='background:var(--blue);border:none;color:#fff;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;';
+  btn.addEventListener('click',function(){ov.remove();});
+  box.appendChild(msg_el);box.appendChild(btn);ov.appendChild(box);document.body.appendChild(ov);
+}
+
+function updateKabelRow(pi,ji,kabel){
+  // Find all checkboxes for this kabel and update them
+  COLS.forEach(function(col){
+    var el=document.querySelector('.chk[data-pi="'+pi+'"][data-ji="'+ji+'"][data-col="'+col.key+'"]');
+    if(!el)return;
+    var on=kabel.checks&&kabel.checks[col.key];
+    var locked=false;
+    if((col.key==='om'||col.key==='pm')&&!(kabel.checks&&kabel.checks['ka']))locked=true;
+    if(col.key==='km'&&(!(kabel.checks&&kabel.checks['om'])||!(kabel.checks&&kabel.checks['pm'])))locked=true;
+    el.className='chk'+(on?' on':locked?' locked':'');
+    el.innerHTML=on?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      :locked?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':'';
+  });
+  // Update percentage cell for this row
+  var pctEl=document.querySelector('.td-p[data-pi="'+pi+'"][data-ji="'+ji+'"]');
+  if(pctEl){
+    var kp=kabelPct(kabel);
+    pctEl.textContent=kp+'%';
+    pctEl.style.color=kp===100?'var(--green2)':kp>0?'var(--cyan)':'var(--muted)';
+  }
+  // Update panel and kast totals in header
+  updateTotals();
+}
+
+function updateTotals(){
+  var d=dbGet();
+  if(VIEW.level!=='kast')return;
+  var kast=d[VIEW.projIdx].kasten[VIEW.kastIdx];
+  var panels=kast.panels||[];
+  var totalKabels=0,totalDone=0;
+  panels.forEach(function(p,pi){
+    var kb=p.kabels||[];
+    var pdone=kb.filter(function(k){return kabelPct(k)===100;}).length;
+    var ppct=kb.length?Math.round(kb.reduce(function(s,k){return s+kabelPct(k);},0)/kb.length):0;
+    totalKabels+=kb.length;totalDone+=pdone;
+    var pctEl=document.querySelector('.panel-pct[data-pi="'+pi+'"]');
+    if(pctEl)pctEl.textContent=pdone+'/'+kb.length+' · '+ppct+'%';
+  });
+  var totEl=document.querySelector('.kt-val');
+  if(totEl)totEl.textContent=totalDone+'/'+totalKabels+' voltooid · '+kastPct(kast)+'%';
+}
+
+
+function togglePanel(pi){var d=dbGet();var p=d[VIEW.projIdx].kasten[VIEW.kastIdx].panels[pi];p.open=p.open===false?true:false;dbSet(d);render();}
+
+var _settingsPi=null;
+
+function openPanelSettings(pi){
+  _settingsPi=pi;
+  renderPanelSettings();
+}
+
+function renderPanelSettings(){
+  var pi=_settingsPi;
+  var d=dbGet();
+  var panel=d[VIEW.projIdx].kasten[VIEW.kastIdx].panels[pi];
+  var kb=panel.kabels||[];
+
+  // Build sheet DOM directly - no innerHTML for buttons
+  var existing=document.querySelector('.overlay');
+  if(existing)existing.remove();
+
+  var ov=document.createElement('div');ov.className='overlay';
+  var sh=document.createElement('div');sh.className='sheet';
+  sh.addEventListener('click',function(e){e.stopPropagation();});
+  ov.addEventListener('click',function(){ov.remove();});
+
+  // Title
+  var t=document.createElement('div');t.className='sh-handle';sh.appendChild(t);
+  var ttl=document.createElement('div');ttl.className='sh-title';ttl.textContent='Panel '+panel.prefix+' instellingen';sh.appendChild(ttl);
+  var sub=document.createElement('div');sub.className='sh-sub';sub.textContent=kb.length+' kabels';sh.appendChild(sub);
+
+  // Delete all button
+  var btnAll=document.createElement('button');
+  btnAll.textContent='Alle kabels verwijderen';
+  btnAll.style.cssText='width:100%;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--danger);border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:8px;display:block;';
+  btnAll.addEventListener('click',function(){
+    customConfirm('Alle kabels verwijderen?',function(){
+    var d2=dbGet();
+    d2[VIEW.projIdx].kasten[VIEW.kastIdx].panels[_settingsPi].kabels=[];
+    dbSet(d2);ov.remove();render();
+  });
+  });
+  sh.appendChild(btnAll);
+
+  // Delete panel button
+  var btnPan=document.createElement('button');
+  btnPan.textContent='Heel panel verwijderen';
+  btnPan.style.cssText='width:100%;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:var(--danger);border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:16px;display:block;';
+  btnPan.addEventListener('click',function(){
+    customConfirm('Heel panel verwijderen?',function(){
+    var d2=dbGet();
+    d2[VIEW.projIdx].kasten[VIEW.kastIdx].panels.splice(_settingsPi,1);
+    dbSet(d2);ov.remove();render();
+    });
+  });
+  sh.appendChild(btnPan);
+
+  // Kabel list label
+  var lbl=document.createElement('div');
+  lbl.style.cssText='font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;';
+  lbl.textContent='Kabels ('+kb.length+')';
+  sh.appendChild(lbl);
+
+  // Each kabel row
+  kb.forEach(function(kabel,ji){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);';
+    var span=document.createElement('span');
+    span.style.cssText='font-family:monospace;font-size:13px;font-weight:600;color:var(--text);';
+    span.textContent=kabel.no;
+    var btn=document.createElement('button');
+    btn.textContent='Verwijderen';
+    btn.style.cssText='background:rgba(239,68,68,.12);border:none;color:var(--danger);cursor:pointer;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:700;font-family:inherit;';
+    btn.dataset.ji=ji;
+    btn.addEventListener('click',function(){
+      var jj=+this.dataset.ji;
+      customConfirm('Kabel verwijderen?',function(){
+      var d2=dbGet();
+      d2[VIEW.projIdx].kasten[VIEW.kastIdx].panels[_settingsPi].kabels.splice(jj,1);
+      dbSet(d2);ov.remove();render();
+      });
+    });
+    row.appendChild(span);row.appendChild(btn);sh.appendChild(row);
+  });
+
+  // Close button
+  var btnClose=document.createElement('button');
+  btnClose.textContent='Sluiten';
+  btnClose.className='btn-s';
+  btnClose.style.marginTop='16px';
+  btnClose.addEventListener('click',function(){ov.remove();});
+  sh.appendChild(btnClose);
+
+  ov.appendChild(sh);
+  document.body.appendChild(ov);
+}
+
+
+function openSheet(html){
+  var ov=document.createElement('div');ov.className='overlay';
+  ov.innerHTML='<div class="sheet"><div class="sh-handle"></div>'+html+'</div>';
+  ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+function closeSheet(){var o=document.querySelector('.overlay');if(o)o.remove();}
+
+// ADD PROJECT
+function openAddProj(){
+  openSheet('<div class="sh-title">Nieuw project</div>'
+    +'<span class="lbl">Projectnaam</span><input class="inp" id="pnaam" placeholder="Harvest House, Project A..."/>'
+    +'<button class="btn-p" onclick="saveProj()">Toevoegen</button>'
+    +'<button class="btn-s" onclick="closeSheet()">Annuleren</button>');
+  setTimeout(function(){var e=document.getElementById('pnaam');if(e)e.focus();},150);
+}
+function saveProj(){
+  var naam=(document.getElementById('pnaam')||{}).value;
+  if(!naam||!naam.trim())return;
+  var d=dbGet();d.push({id:uid(),naam:naam.trim(),kasten:[]});
+  dbSet(d);closeSheet();render();
+}
+
+// ADD KAST
+function openAddKast(){
+  openSheet('<div class="sh-title">Nieuwe kast</div>'
+    +'<span class="lbl">Kastnummer</span><input class="inp inp-mono" id="kno" placeholder="H1, PK-01, WK-A..."/>'
+    +'<span class="lbl">Kastnaam (optioneel)</span><input class="inp" id="knaam" placeholder="Begane grond, Verdieping 1..."/>'
+    +'<button class="btn-p" onclick="saveKast()">Toevoegen</button>'
+    +'<button class="btn-s" onclick="closeSheet()">Annuleren</button>');
+  setTimeout(function(){var e=document.getElementById('kno');if(e)e.focus();},150);
+}
+function saveKast(){
+  var no=(document.getElementById('kno')||{}).value;
+  if(!no||!no.trim())return;
+  var d=dbGet();
+  if(!d[VIEW.projIdx].kasten)d[VIEW.projIdx].kasten=[];
+  d[VIEW.projIdx].kasten.push({id:uid(),no:no.trim(),naam:((document.getElementById('knaam')||{}).value||'').trim(),panels:[]});
+  dbSet(d);closeSheet();render();
+}
+
+// ADD PANEL
+var aralıklar=[];
+function openAddPanel(){
+  aralıklar=[{prefix:'',van:1,tot:24,pad:2}];
+  renderPanelSheet();
+}
+function renderPanelSheet(){
+  var blokken=aralıklar.map(function(a,i){
+    return'<div class="aralık-blok">'
+      +'<div class="aralık-hdr">'
+        +'<span class="aralık-lbl">Aansluiting '+(i+1)+'</span>'
+        +(i>0?'<button class="aralık-del" onclick="removeAralık('+i+')">×</button>':'<span></span>')
+      +'</div>'
+      +'<div class="g3">'
+        +'<div><span class="lbl">Prefix (bijv. A, B, K-)</span><input class="inp inp-mono" id="pfx-'+i+'" value="'+a.prefix+'" placeholder="A" oninput="updatePrev()"/></div>'
+        +'<div><span class="lbl">Vanaf</span><input class="inp inp-mono" id="van-'+i+'" value="'+pad(a.van,a.pad)+'" type="text" inputmode="numeric" placeholder="01" oninput="updatePrev()"/></div>'
+        +'<div><span class="lbl">Tot en met</span><input class="inp inp-mono" id="tot-'+i+'" value="'+a.tot+'" type="text" inputmode="numeric" placeholder="12" oninput="updatePrev()"/></div>'
+      +'</div>'
+      +'<div><span class="lbl">Cijfers (aantal nullen, bijv. 2 = 01)</span><input class="inp inp-mono" id="pad-'+i+'" value="'+a.pad+'" type="text" inputmode="numeric" style="width:80px" oninput="updatePrev()"/></div>'
+      +'<div class="preview" id="prev-'+i+'"></div>'
+    +'</div>';
+  }).join('');
+  var html='<div class="sh-title">Panel toevoegen</div>'
+    +'<div class="sh-sub">Kabel aansluitingen instellen</div>'
+    +blokken
+    +'<button class="btn-add-aralık" onclick="addAralık()">+ Nog een reeks toevoegen</button>'
+    +'<button class="btn-p" onclick="savePanel()">Toevoegen</button>'
+    +'<button class="btn-s" onclick="closeSheet()">Annuleren</button>';
+  var existing=document.querySelector('.overlay');
+  if(existing)existing.remove();
+  openSheet(html);
+  updatePrev();
+}
+function addAralık(){
+  readAralıklar();
+  aralıklar.push({prefix:'',van:1,tot:24,pad:2});
+  renderPanelSheet();
+}
+function removeAralık(i){
+  readAralıklar();
+  aralıklar.splice(i,1);
+  renderPanelSheet();
+}
+function readAralıklar(){
+  aralıklar=aralıklar.map(function(a,i){
+    return{
+      prefix:(document.getElementById('pfx-'+i)||{}).value||'',
+      van:parseInt((document.getElementById('van-'+i)||{}).value)||1,
+      tot:parseInt((document.getElementById('tot-'+i)||{}).value)||12,
+      pad:parseInt((document.getElementById('pad-'+i)||{}).value)||2
+    };
+  });
+}
+function updatePrev(){
+  aralıklar.forEach(function(a,i){
+    var pfx=(document.getElementById('pfx-'+i)||{}).value||'';
+    var van=parseInt((document.getElementById('van-'+i)||{}).value)||0;
+    var tot=parseInt((document.getElementById('tot-'+i)||{}).value)||0;
+    var p=parseInt((document.getElementById('pad-'+i)||{}).value)||2;
+    var el=document.getElementById('prev-'+i);if(!el)return;
+    if(!van||!tot||van>tot){el.textContent='Vul geldige nummers in';return;}
+    var cnt=tot-van+1;
+    var shown=[];for(var n=van;n<=Math.min(tot,van+4);n++)shown.push(pfx+pad(n,p));
+    el.textContent=shown.join('  ')+(cnt>5?'  ...  +'+( cnt-5)+' meer ('+cnt+' totaal)':'  ('+cnt+' totaal)');
+  });
+}
+function savePanel(){
+  readAralıklar();
+  var valid=true;
+  aralıklar.forEach(function(a){if(!a.van||!a.tot||a.van>a.tot)valid=false;});
+  if(!valid){alert('Controleer de nummers');return;}
+  var d=dbGet();
+  var kast=d[VIEW.projIdx].kasten[VIEW.kastIdx];
+  if(!kast.panels)kast.panels=[];
+
+  // Group by prefix — same prefix = same panel
+  var prefixMap={};
+  var prefixOrder=[];
+  aralıklar.forEach(function(a){
+    var pfx=a.prefix;
+    if(!prefixMap[pfx]){prefixMap[pfx]=[];prefixOrder.push(pfx);}
+    for(var n=a.van;n<=a.tot;n++){
+      prefixMap[pfx].push({id:uid(),no:a.prefix+pad(n,a.pad),checks:{}});
+    }
+  });
+
+  prefixOrder.forEach(function(pfx){
+    // Check if panel with same prefix already exists
+    var existing=kast.panels.filter(function(p){return p.prefix===pfx;})[0];
+    if(existing){
+      existing.kabels=existing.kabels.concat(prefixMap[pfx]);existing.open=true;
+    } else {
+      kast.panels.push({id:uid(),prefix:pfx,kabels:prefixMap[pfx],open:true});
+    }
+  });
+
+  dbSet(d);closeSheet();render();
+}
+
+// --- PDF EXPORT ---
+function exportPDF(){
+  var d=dbGet();
+  var proj=d[VIEW.projIdx];
+  var kasten=proj.kasten||[];
+  var colLabels=COLS.map(function(c){return c.label;});
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>'+proj.naam+'</title><style>';
+  html+='body{font-family:Arial,sans-serif;font-size:11px;color:#111;margin:20px;}';
+  html+='h1{font-size:20px;font-weight:800;text-align:center;margin-bottom:4px;}';
+  html+='.proj-sub{text-align:center;font-size:11px;color:#666;margin-bottom:24px;}';
+  html+='h2{font-size:14px;font-weight:700;background:#0d1b2a;color:#fff;padding:8px 12px;margin:20px 0 0;border-radius:6px 6px 0 0;}';
+  html+='.panel-title{font-size:11px;font-weight:700;background:#e8edf4;padding:6px 12px;border-left:3px solid #2563eb;margin:0;}';
+  html+='table{width:100%;border-collapse:collapse;margin-bottom:0;}';
+  html+='th{background:#f1f5f9;padding:6px 8px;text-align:center;font-size:9px;font-weight:700;text-transform:uppercase;border:1px solid #cbd5e1;}';
+  html+='th.th-k{text-align:left;}';
+  html+='td{padding:5px 8px;border:1px solid #e2e8f0;text-align:center;font-size:10px;}';
+  html+='td.td-k{text-align:left;font-family:monospace;font-weight:600;}';
+  html+='.chk-on{color:#10b981;font-weight:700;font-size:12px;}';
+  html+='.chk-off{color:#cbd5e1;}';
+  html+='.pct-100{color:#10b981;font-weight:700;}';
+  html+='.pct-part{color:#0891b2;}';
+  html+='.kast-total{background:#f8fafc;padding:6px 12px;font-size:10px;display:flex;justify-content:space-between;border:1px solid #e2e8f0;border-top:none;margin-bottom:24px;}';
+  html+='.page-break{page-break-after:always;}';
+  html+='@media print{.no-print{display:none;}.page-break{page-break-after:always;}}';
+  html+='</style></head><body>';
+
+  // Print button
+  html+='<div class="no-print" style="text-align:center;margin-bottom:20px;"><button onclick="window.print()" style="background:#2563eb;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Afdrukken / PDF opslaan</button></div>';
+
+  html+='<h1>'+proj.naam+'</h1>';
+  var totalKabels=0;var totalDone=0;
+  kasten.forEach(function(k){(k.panels||[]).forEach(function(p){totalKabels+=(p.kabels||[]).length;(p.kabels||[]).forEach(function(kb){if(kabelPct(kb)===100)totalDone++;});});});
+  html+='<div class="proj-sub">'+kasten.length+' kasten · '+totalKabels+' kabels · '+totalDone+'/'+totalKabels+' voltooid</div>';
+
+  kasten.forEach(function(kast,ki){
+    var kpct=kastPct(kast);
+    html+='<h2>'+kast.no+(kast.naam?' &ndash; '+kast.naam:'')+'&nbsp;&nbsp;<span style="font-size:11px;font-weight:400;">'+kpct+'%</span></h2>';
+    var kTot=0,kDone=0;
+    (kast.panels||[]).forEach(function(panel){
+      var kb=panel.kabels||[];
+      kTot+=kb.length;
+      kb.forEach(function(k){if(kabelPct(k)===100)kDone++;});
+      var ppct=kb.length?Math.round(kb.reduce(function(s,k){return s+kabelPct(k);},0)/kb.length):0;
+      html+='<div class="panel-title">Panel '+panel.prefix+' &nbsp;·&nbsp; '+kb.length+' kabels &nbsp;·&nbsp; '+ppct+'%</div>';
+      html+='<table><thead><tr><th class="th-k">Kabel</th>';
+      colLabels.forEach(function(l){html+='<th>'+l+'</th>';});
+      html+='<th>%</th></tr></thead><tbody>';
+      kb.forEach(function(kabel){
+        var kp=kabelPct(kabel);
+        var pctCls=kp===100?'pct-100':kp>0?'pct-part':'';
+        html+='<tr><td class="td-k">'+kabel.no+'</td>';
+        COLS.forEach(function(col){
+          var on=kabel.checks&&kabel.checks[col.key];
+          html+='<td class="'+(on?'chk-on':'chk-off')+'">'+(on?'&#10003;':'-')+'</td>';
+        });
+        html+='<td class="'+pctCls+'">'+kp+'%</td></tr>';
+      });
+      html+='</tbody></table>';
+    });
+    html+='<div class="kast-total"><span>Kast totaal: '+kpct+'%</span><span>'+kDone+'/'+kTot+' voltooid</span></div>';
+    if(ki<kasten.length-1)html+='<div class="page-break"></div>';
+  });
+  html+='</body></html>';
+
+  // Show PDF in overlay iframe inside the app
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:#fff;z-index:500;display:flex;flex-direction:column;';
+  var toolbar=document.createElement('div');
+  toolbar.style.cssText='background:#0d1b2a;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;';
+  var title=document.createElement('span');title.style.cssText='color:#f1f5f9;font-size:14px;font-weight:700;';title.textContent=proj.naam+' - Rapport';
+  var btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;';
+  var btnClose=document.createElement('button');
+  btnClose.textContent='Sluiten';
+  btnClose.style.cssText='background:#1e3a5f;color:#7dd3fc;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;';
+  btnClose.addEventListener('click',function(){ov.remove();});
+  var btnDl=document.createElement('button');
+  btnDl.textContent='Downloaden';
+  btnDl.style.cssText='background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;';
+  btnDl.addEventListener('click',function(){
+    var blob=new Blob([html],{type:'text/html'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download=proj.naam+'.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  });
+  btnRow.appendChild(btnDl);btnRow.appendChild(btnClose);
+  toolbar.appendChild(title);toolbar.appendChild(btnRow);
+  var iframe=document.createElement('iframe');
+  iframe.style.cssText='flex:1;border:none;width:100%;';
+  iframe.srcdoc=html;
+  ov.appendChild(toolbar);ov.appendChild(iframe);
+  document.body.appendChild(ov);
+}
+
+// --- CLOUDFLARE SYNC ---
+var API_URL = 'https://project-manager-api.muminmertozturk.workers.dev';
+var syncTimer = null;
+var lastSyncTime = null;
+
+function dbGet(){
+  try{return JSON.parse(localStorage.getItem('kt3')||'[]');}catch(e){return[];}
+}
+function dbSet(d){
+  localStorage.setItem('kt3',JSON.stringify(d));
+  // Auto sync to cloud after 1 second of inactivity
+  if(syncTimer)clearTimeout(syncTimer);
+  syncTimer=setTimeout(function(){syncToCloud(d);},1000);
+}
+
+function syncToCloud(data){
+  fetch(API_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
+  }).then(function(){
+    lastSyncTime=new Date();
+    updateSyncStatus('Gesynchroniseerd ✓');
+  }).catch(function(){
+    updateSyncStatus('Sync mislukt ✗');
+  });
+}
+
+function loadFromCloud(){
+  updateSyncStatus('Laden...');
+  fetch(API_URL)
+    .then(function(r){return r.json();})
+    .then(function(data){
+      localStorage.setItem('kt3',JSON.stringify(data));
+      lastSyncTime=new Date();
+      updateSyncStatus('Geladen ✓');
+      render();
+    })
+    .catch(function(){
+      updateSyncStatus('Offline - lokale data');
+      render();
+    });
+}
+
+function updateSyncStatus(msg){
+  var el=document.getElementById('sync-status');
+  if(el)el.textContent=msg;
+}
+
+// --- CUSTOM CONFIRM ---
+function customConfirm(msg, onYes){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var box=document.createElement('div');
+  box.style.cssText='background:#1a2235;border:1px solid #2d3f5c;border-radius:16px;padding:24px;max-width:320px;width:100%;';
+  var msg_el=document.createElement('div');
+  msg_el.style.cssText='font-size:15px;font-weight:700;color:#f1f5f9;margin-bottom:20px;text-align:center;';
+  msg_el.textContent=msg;
+  var btnRow=document.createElement('div');
+  btnRow.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:10px;';
+  var btnNo=document.createElement('button');
+  btnNo.textContent='Annuleren';
+  btnNo.style.cssText='background:#222d42;border:1px solid #2d3f5c;color:#94a3b8;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;';
+  btnNo.addEventListener('click',function(){ov.remove();});
+  var btnYes=document.createElement('button');
+  btnYes.textContent='Verwijderen';
+  btnYes.style.cssText='background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:#ef4444;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;';
+  btnYes.addEventListener('click',function(){ov.remove();onYes();});
+  btnRow.appendChild(btnNo);btnRow.appendChild(btnYes);
+  box.appendChild(msg_el);box.appendChild(btnRow);
+  ov.appendChild(box);document.body.appendChild(ov);
+}
+
+// --- INIT ---
+setView('projects');
+loadFromCloud();
+</script>
+</body>
+</html>
