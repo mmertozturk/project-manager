@@ -4,9 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="Kast Tracker"/>
+<meta name="apple-mobile-web-app-title" content="Project Manager"/>
 <meta name="theme-color" content="#0a0f1e"/>
-<title>Kast Tracker</title>
+<title>Project Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -119,14 +119,26 @@ tr:last-child td{border-bottom:none;}
 </style>
 </head>
 <body>
-<div id="app">
+<div id="lock-screen" style="position:fixed;inset:0;background:#0a0f1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#111827;border:1px solid #2d3f5c;border-radius:20px;padding:32px 24px;max-width:320px;width:100%;text-align:center;">
+    <div style="width:56px;height:56px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    </div>
+    <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:6px;">Project Manager</div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:24px;">Voer je wachtwoord in</div>
+    <input type="password" id="pwd-input" placeholder="Wachtwoord" style="width:100%;background:#0a0f1e;border:1px solid #2d3f5c;border-radius:10px;padding:12px 14px;color:#f1f5f9;font-size:16px;font-family:inherit;outline:none;text-align:center;letter-spacing:4px;margin-bottom:12px;" onkeydown="if(event.key==='Enter')checkPwd()"/>
+    <div id="pwd-error" style="color:#ef4444;font-size:12px;margin-bottom:12px;min-height:16px;"></div>
+    <button onclick="checkPwd()" style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;">Inloggen</button>
+  </div>
+</div>
+<div id="app" style="display:none;">
   <div id="header">
     <div class="hdr-left">
       <div class="hdr-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
       </div>
       <div>
-        <div class="hdr-title" id="hdr-title">Kast Tracker</div><div id="sync-status" style="font-size:9px;color:var(--muted2);margin-top:1px">Laden...</div>
+        <div class="hdr-title" id="hdr-title">Project Manager</div><div id="sync-status" style="font-size:9px;color:var(--muted2);margin-top:1px">Laden...</div>
         <div id="hdr-bread" style="display:none"></div>
       </div>
     </div>
@@ -189,7 +201,7 @@ function updateHeader(){
   var b=document.getElementById('hdr-bread');
   var r=document.getElementById('hdr-right');
   if(VIEW.level==='projects'){
-    t.textContent='Kast Tracker';
+    t.textContent='Project Manager';
     b.style.display='none';
     r.innerHTML='<button class="btn-add" onclick="openAddProj()">+ Project</button>';
   } else if(VIEW.level==='kasten'){
@@ -711,7 +723,7 @@ function exportPDF(){
     html+='<div class="kast-total"><span>Kast totaal: '+kpct+'%</span><span>'+kDone+'/'+kTot+' voltooid</span></div>';
     if(ki<kasten.length-1)html+='<div class="page-break"></div>';
   });
-  html+='</body></html>';
+  html+='</div></body></html>';
 
   // Show PDF in overlay iframe inside the app
   var ov=document.createElement('div');
@@ -814,9 +826,24 @@ function customConfirm(msg, onYes){
   ov.appendChild(box);document.body.appendChild(ov);
 }
 
-// --- INIT ---
-setView('projects');
-loadFromCloud();
+// --- PASSWORD ---
+function checkPwd(){
+  var pwd=document.getElementById('pwd-input').value;
+  if(pwd==='78159228Mo'){
+    document.getElementById('lock-screen').remove();
+    document.getElementById('app').style.display='flex';
+    setView('projects');
+    loadFromCloud();
+  } else {
+    var err=document.getElementById('pwd-error');
+    err.textContent='Onjuist wachtwoord';
+    var inp=document.getElementById('pwd-input');
+    inp.value='';
+    inp.style.borderColor='#ef4444';
+    setTimeout(function(){inp.style.borderColor='#2d3f5c';err.textContent='';},2000);
+  }
+}
+setTimeout(function(){var e=document.getElementById('pwd-input');if(e)e.focus();},200);
 </script>
-</body>
+</div></body>
 </html>
