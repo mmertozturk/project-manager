@@ -167,12 +167,16 @@ function kabelPct(k){
   var done=COLS.filter(function(c){return k.checks&&k.checks[c.key];}).length;
   return Math.round(done/COLS.length*100);
 }
+function anyPct(k){
+  var done=COLS.filter(function(c){return k.checks&&k.checks[c.key];}).length;
+  return Math.round(done/COLS.length*100);
+}
 function kastPct(kast){
   var all=[];
   (kast.panels||[]).forEach(function(p){(p.kabels||[]).forEach(function(k){all.push(k);});});
   (kast.meerwerk||[]).forEach(function(m){all.push(m);});
   if(!all.length)return 0;
-  return Math.round(all.reduce(function(s,k){return s+(kabelPct(k)||mwKabelPct(k));},0)/all.length);
+  return Math.round(all.reduce(function(s,k){return s+anyPct(k);},0)/all.length);
 }
 function projPct(proj){
   var kasten=proj.kasten||[];
@@ -220,7 +224,7 @@ function updateHeader(){
     t.textContent=kast.no+(kast.naam?' · '+kast.naam:'');
     b.style.display='block';
     b.innerHTML='<button class="hdr-back" onclick="setView(\'kasten\','+VIEW.projIdx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Terug</button>';
-    r.innerHTML='<button class="btn-add" onclick="openAddPanel()" id="btn-add-panel">+ Panel</button>&nbsp;<button onclick="exportPDF()" style="background:#1e3a5f;color:#7dd3fc;border:1px solid #2d5a8a;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">PDF</button>';
+    r.innerHTML='<button class="btn-add" onclick="openAddPanel()">+ Panel</button>&nbsp;<button onclick="exportKastPDF()" style="background:#1e3a5f;color:#06b6d4;border:1px solid #0891b2;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Kast PDF</button>';
   }
 }
 
@@ -330,8 +334,10 @@ function renderKast(){
 
   ct.innerHTML=panels.map(function(panel,pi){
     var kb=panel.kabels||[];
-    var pdone=kb.filter(function(k){return kabelPct(k)===100;}).length;
-    var ppct=kb.length?Math.round(kb.reduce(function(s,k){return s+kabelPct(k);},0)/kb.length):0;
+    var mwForPdone=(kast.meerwerk||[]).filter(function(m){return panel.prefix&&m.no.toLowerCase().indexOf(panel.prefix.toLowerCase())===0;});var pdone=kb.filter(function(k){return kabelPct(k)===100;}).length+mwForPdone.filter(function(m){return mwKabelPct(m)===100;}).length;
+    var mwForPpct=(kast.meerwerk||[]).filter(function(m){return panel.prefix&&m.no.toLowerCase().indexOf(panel.prefix.toLowerCase())===0;});
+    var allForPanel=kb.concat(mwForPpct);
+    var ppct=allForPanel.length?Math.round(allForPanel.reduce(function(s,k){return s+anyPct(k);},0)/allForPanel.length):0;
 
     // Find meerwerk kabels matching this panel prefix
     var mwAll=kast.meerwerk||[];
@@ -391,10 +397,12 @@ function renderKast(){
         +'<div style="display:flex;align-items:center;gap:10px">'
           +'<span style="color:var(--muted2)">'+arrow+'</span>'
           +'<span class="panel-prefix">Panel '+panel.prefix+'</span>'
-          +'<span style="font-size:10px;color:var(--muted2)">'+kb.length+' kabels</span>'
+          +'<span style="font-size:10px;color:var(--muted2)">'+(kb.length+mwForPanel.length)+' kabels</span>'
         +'</div>'
         +'<div style="display:flex;align-items:center;gap:8px" onclick="event.stopPropagation()">'
-          +'<span class="panel-pct" data-pi="'+pi+'">'+pdone+'/'+kb.length+' · '+ppct+'%</span>'
+          +'<span class="panel-pct" data-pi="'+pi+'">'+pdone+'/'+(kb.length+mwForPanel.length)+' · '+ppct+'%</span>'
+          +'<button onclick="event.stopPropagation();movePanelUp('+pi+')" style="background:rgba(100,116,139,.15);border:none;color:var(--muted2);cursor:pointer;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin-right:4px">▲</button>'
+          +'<button onclick="event.stopPropagation();movePanelDown('+pi+')" style="background:rgba(100,116,139,.15);border:none;color:var(--muted2);cursor:pointer;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin-right:4px">▼</button>'
           +'<button onclick="event.stopPropagation();openPanelSettings('+pi+')" style="background:rgba(100,116,139,.15);border:none;color:var(--muted2);cursor:pointer;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>'
         +'</div>'
       +'</div>'
@@ -413,55 +421,64 @@ function renderKast(){
     +'<span class="kt-val">'+totalDone+'/'+totalKabels+' voltooid · '+kastPct(kast)+'%</span>'
   +'</div>';
 
-  // Overig meerwerk - kabels that don't match any panel prefix
-  var allPrefixes=(kast.panels||[]).map(function(p){return p.prefix.toLowerCase();});
-  var overigMw=(kast.meerwerk||[]).filter(function(m){
-    return !allPrefixes.some(function(pfx){
-      return pfx&&m.no.toLowerCase().indexOf(pfx)===0;
-    });
+  // Meerwerk with no matching panel prefix → show as new panel groups
+  var allPfx=(kast.panels||[]).map(function(p){return p.prefix.toLowerCase();});
+  var unmatched=(kast.meerwerk||[]).filter(function(m){
+    return !allPfx.some(function(pfx){return pfx&&m.no.toLowerCase().indexOf(pfx)===0;});
   });
 
-  if(overigMw.length){
-    var overigDone=overigMw.filter(function(m){return mwKabelPct(m)===100;}).length;
-    var overigRows=overigMw.map(function(m){
-      var mi=(kast.meerwerk||[]).findIndex(function(x){return x.id===m.id;});
-      var kp=mwKabelPct(m);
-      var kc=kp===100?'var(--green2)':kp>0?'var(--cyan)':'var(--muted)';
-      var cells=COLS.map(function(col){
-        var on=m.checks&&m.checks[col.key];
-        var locked=false;
-        if((col.key==='om'||col.key==='pm')&&!(m.checks&&m.checks['ka']))locked=true;
-        if(col.key==='km'&&(!(m.checks&&m.checks['om'])||!(m.checks&&m.checks['pm'])))locked=true;
-        var cls='chk'+(on?' on':locked?' locked':'');
-        var icon=on?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
-          :locked?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':'';
-        return'<td class="td-c"><div class="'+cls+'" data-mi="'+mi+'" data-col="'+col.key+'" onclick="tglMw(this)">'+icon+'</div></td>';
+  if(unmatched.length){
+    // Group by their own prefix (first 1-2 chars before digits)
+    var mwGroups={};var mwOrder=[];
+    unmatched.forEach(function(m){
+      // Extract prefix = leading non-digit chars
+      var pfxMatch=m.no.match(/^([^0-9]*)/);
+      var pfx=pfxMatch?pfxMatch[1].toUpperCase():'?';
+      if(!mwGroups[pfx]){mwGroups[pfx]=[];mwOrder.push(pfx);}
+      mwGroups[pfx].push(m);
+    });
+
+    mwOrder.forEach(function(pfx){
+      var grp=mwGroups[pfx];
+      var grpDone=grp.filter(function(m){return mwKabelPct(m)===100;}).length;
+      var grpPct=grp.length?Math.round(grp.reduce(function(s,m){return s+mwKabelPct(m);},0)/grp.length):0;
+      var grpRows=grp.map(function(m){
+        var mi=(kast.meerwerk||[]).findIndex(function(x){return x.id===m.id;});
+        var kp=mwKabelPct(m);var kc=kp===100?'var(--green2)':kp>0?'var(--cyan)':'var(--muted)';
+        var cells=COLS.map(function(col){
+          var on=m.checks&&m.checks[col.key];
+          var locked=false;
+          if((col.key==='om'||col.key==='pm')&&!(m.checks&&m.checks['ka']))locked=true;
+          if(col.key==='km'&&(!(m.checks&&m.checks['om'])||!(m.checks&&m.checks['pm'])))locked=true;
+          var cls='chk'+(on?' on':locked?' locked':'');
+          var icon=on?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+            :locked?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':'';
+          return'<td class="td-c"><div class="'+cls+'" data-mi="'+mi+'" data-col="'+col.key+'" onclick="tglMw(this)">'+icon+'</div></td>';
+        }).join('');
+        var delB='<td class="td-c"><div style="width:24px;height:24px;border-radius:6px;background:rgba(245,158,11,.15);color:#f59e0b;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;font-size:16px" data-mi="'+mi+'" onclick="delMw(this)">×</div></td>';
+        return'<tr style="background:rgba(245,158,11,.06);">'
+          +'<td class="td-k" style="border-left:3px solid #f59e0b;"><span style="color:#f59e0b;">'+m.no+'</span> <span style="font-size:9px;color:#f59e0b77;font-weight:700;">MW</span></td>'
+          +cells+'<td class="td-p" style="color:'+kc+'">'+kp+'%</td>'+delB+'</tr>';
       }).join('');
-      return'<tr style="background:rgba(245,158,11,.08);">'
-        +'<td class="td-k" style="border-left:3px solid #f59e0b;"><span style="color:#f59e0b;">'+m.no+'</span> <span style="font-size:9px;color:#f59e0b77;font-weight:700;">MW</span></td>'
-        +cells
-        +'<td class="td-p" style="color:'+kc+'">'+kp+'%</td>'
-        +'<td class="td-c"><div style="width:24px;height:24px;border-radius:6px;background:rgba(245,158,11,.15);color:#f59e0b;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;font-size:16px" data-mi="'+mi+'" onclick="delMw(this)">×</div></td>'
-        +'</tr>';
-    }).join('');
 
-    ct.innerHTML+=
-      '<div style="border-top:2px solid #f59e0b33;">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#1a1a0a;">'
-        +'<span style="font-size:11px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:.08em;">Overig Meerwerk ('+overigMw.length+')</span>'
-        +'<span style="font-size:11px;color:var(--muted2);">'+overigDone+'/'+overigMw.length+' voltooid</span>'
-      +'</div>'
-      +'<div class="tbl-scroll"><table>'
-        +'<thead><tr><th class="th-k">Kabel</th>'
-        +COLS.map(function(c){return'<th>'+c.label+'</th>';}).join('')
-        +'<th>%</th><th></th></tr></thead>'
-        +'<tbody>'+overigRows+'</tbody>'
-      +'</table></div>'
-
-      +'</div>';
+      ct.innerHTML+=
+        '<div style="border-top:2px solid #f59e0b44;margin-top:0">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(245,158,11,.08);">'
+          +'<span style="font-size:12px;font-weight:700;color:#f59e0b;">Panel '+pfx+' <span style="font-size:9px;opacity:.7;">(Meerwerk)</span></span>'
+          +'<span style="font-size:11px;color:var(--muted2);">'+grpDone+'/'+grp.length+' · '+grpPct+'%</span>'
+        +'</div>'
+        +'<div class="tbl-scroll"><table>'
+          +'<thead><tr><th class="th-k">Kabel</th>'
+          +COLS.map(function(c){return'<th>'+c.label+'</th>';}).join('')
+          +'<th>%</th><th></th></tr></thead>'
+          +'<tbody>'+grpRows+'</tbody>'
+        +'</table></div>'
+        +'</div>';
+    });
   }
 
 }
+
 
 // --- TOGGLE CHECK ---
 function tgl(el){
@@ -525,19 +542,36 @@ function updateTotals(){
   var kast=d[VIEW.projIdx].kasten[VIEW.kastIdx];
   var panels=kast.panels||[];
   var totalKabels=0,totalDone=0;
+  // Include meerwerk in totals
+  (kast.meerwerk||[]).forEach(function(m){totalKabels++;if(mwKabelPct(m)===100)totalDone++;});
   panels.forEach(function(p,pi){
     var kb=p.kabels||[];
-    var pdone=kb.filter(function(k){return kabelPct(k)===100;}).length;
-    var ppct=kb.length?Math.round(kb.reduce(function(s,k){return s+kabelPct(k);},0)/kb.length):0;
+    var mwForPanel=(kast.meerwerk||[]).filter(function(m){return p.prefix&&m.no.toLowerCase().indexOf(p.prefix.toLowerCase())===0;});
+    var allForPanel=kb.concat(mwForPanel);
+    var pdone=kb.filter(function(k){return kabelPct(k)===100;}).length+mwForPanel.filter(function(m){return mwKabelPct(m)===100;}).length;
+    var ppct=allForPanel.length?Math.round(allForPanel.reduce(function(s,k){return s+anyPct(k);},0)/allForPanel.length):0;
     totalKabels+=kb.length;totalDone+=pdone;
     var pctEl=document.querySelector('.panel-pct[data-pi="'+pi+'"]');
-    if(pctEl)pctEl.textContent=pdone+'/'+kb.length+' · '+ppct+'%';
+    if(pctEl)pctEl.textContent=pdone+'/'+(kb.length+mwForPanel.length)+' · '+ppct+'%';
   });
   var totEl=document.querySelector('.kt-val');
   if(totEl)totEl.textContent=totalDone+'/'+totalKabels+' voltooid · '+kastPct(kast)+'%';
 }
 
-
+function movePanelUp(pi){
+  if(pi===0)return;
+  var d=dbGet();
+  var panels=d[VIEW.projIdx].kasten[VIEW.kastIdx].panels;
+  var tmp=panels[pi];panels[pi]=panels[pi-1];panels[pi-1]=tmp;
+  dbSet(d);renderKast();
+}
+function movePanelDown(pi){
+  var d=dbGet();
+  var panels=d[VIEW.projIdx].kasten[VIEW.kastIdx].panels;
+  if(pi>=panels.length-1)return;
+  var tmp=panels[pi];panels[pi]=panels[pi+1];panels[pi+1]=tmp;
+  dbSet(d);renderKast();
+}
 function togglePanel(pi){var d=dbGet();var p=d[VIEW.projIdx].kasten[VIEW.kastIdx].panels[pi];p.open=p.open===false?true:false;dbSet(d);render();}
 
 var _settingsPi=null;
@@ -880,7 +914,7 @@ function renderProjMeerwerk(proj,ct,tabBar){
     return'<div style="margin-bottom:0;border-top:1px solid var(--border2);">'
       +'<div style="padding:8px 14px;background:#1a2235;display:flex;justify-content:space-between;align-items:center;">'
         +'<span style="font-size:13px;font-weight:700;color:var(--cyan);">'+x.kastNo+(x.kastNaam?' · '+x.kastNaam:'')+'</span>'
-        +'<span style="font-size:11px;color:var(--warn);">'+kastHours+' uur</span>'
+        +'<span data-kast-hours="'+x.ki+'" style="font-size:11px;color:var(--warn);">'+kastHours+' uur</span>'
       +'</div>'
       +'<div class="tbl-scroll"><table>'
         +'<thead><tr><th class="th-k">Kabel</th>'
@@ -910,7 +944,7 @@ function renderProjMeerwerk(proj,ct,tabBar){
   ct.innerHTML=tabBar
     +'<div class="kast-total" style="background:#1a1a0a;border-bottom:1px solid #f59e0b33;">'
       +'<span class="kt-lbl" style="color:#f59e0b;">MEERWERK OVERZICHT</span>'
-      +'<span class="kt-val">'+totalDone+'/'+totalKabels+' voltooid · '+totalHours+' uur</span>'
+      +'<span class="kt-val mw-total-uur">'+totalDone+'/'+totalKabels+' voltooid · '+totalHours+' uur</span>'
     +'</div>'
     +'<div style="background:var(--bg2);border-bottom:2px solid #f59e0b33;">'
       +'<div style="padding:8px 14px;font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:.08em;">Uren per kast</div>'
@@ -926,7 +960,7 @@ function switchKastTab(tab){
   var r=document.getElementById('hdr-right');
   if(r){
     if(tab==='panels'){
-      r.innerHTML='<button class="btn-add" onclick="openAddPanel()">+ Panel</button>&nbsp;<button onclick="exportPDF()" style="background:#1e3a5f;color:#7dd3fc;border:1px solid #2d5a8a;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">PDF</button>';
+      r.innerHTML='<button class="btn-add" onclick="openAddPanel()">+ Panel</button>&nbsp;<button onclick="exportKastPDF()" style="background:#1e3a5f;color:#06b6d4;border:1px solid #0891b2;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Kast PDF</button>';
     } else {
       r.innerHTML='<button class="btn-add" onclick="openAddMeerwerk()" style="background:#f59e0b;">+ Kabel</button>';
     }
@@ -982,6 +1016,15 @@ function saveMwHoursForKast(el){
   var d=dbGet();
   d[VIEW.projIdx].kasten[ki].meerwerkHours=val;
   dbSet(d);
+  // Update all displayed hour texts
+  var totalHours=0;
+  (d[VIEW.projIdx].kasten||[]).forEach(function(k){totalHours+=(k.meerwerkHours||0);});
+  // Update kast hour display in section header
+  var kastHdrEls=document.querySelectorAll('[data-kast-hours="'+ki+'"]');
+  kastHdrEls.forEach(function(e){e.textContent=val+' uur';});
+  // Update overview total
+  var totEl=document.querySelector('.mw-total-uur');
+  if(totEl)totEl.textContent=totalHours+' uur';
 }
 
 function saveMwHours(val){
@@ -1014,7 +1057,57 @@ function tglMw(el){
   }
   m.checks[col]=on;
   dbSet(d);
-  if(VIEW.level==='kast')renderKast();else renderKasten();
+  if(VIEW.level==='kast'){
+    // In kast view - update only the affected row without full re-render
+    updateMwRow(el, m, mi, ki);
+    updateTotals();
+  } else {
+    // In meerwerk tab - update only the affected row
+    updateMwRow(el, m, mi, ki);
+    updateMwTotals(ki);
+  }
+}
+
+function updateMwRow(el, m, mi, ki){
+  // Update all checkboxes in this meerwerk row
+  COLS.forEach(function(col){
+    var chk=document.querySelector('.chk[data-mi="'+mi+'"][data-ki="'+ki+'"][data-col="'+col.key+'"]');
+    if(!chk){
+      // Also try without data-ki (kast view)
+      chk=document.querySelector('.chk[data-mi="'+mi+'"][data-col="'+col.key+'"]:not([data-ki])');
+    }
+    // Try both
+    var chks=document.querySelectorAll('.chk[data-mi="'+mi+'"][data-col="'+col.key+'"]');
+    chks.forEach(function(c){
+      var on=m.checks&&m.checks[col.key];
+      var locked=false;
+      if((col.key==='om'||col.key==='pm')&&!(m.checks&&m.checks['ka']))locked=true;
+      if(col.key==='km'&&(!(m.checks&&m.checks['om'])||!(m.checks&&m.checks['pm'])))locked=true;
+      c.className='chk'+(on?' on':locked?' locked':'');
+      c.innerHTML=on?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+        :locked?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':'';
+    });
+  });
+  // Update pct cells for this mi
+  var kp=mwKabelPct(m);
+  var kc=kp===100?'var(--green2)':kp>0?'var(--cyan)':'var(--muted)';
+  document.querySelectorAll('.td-p[data-mi="'+mi+'"]').forEach(function(el){
+    el.textContent=kp+'%';
+    el.style.color=kc;
+  });
+}
+
+function updateMwTotals(ki){
+  // Update meerwerk overview totals without full re-render
+  var d=dbGet();
+  var kasten=d[VIEW.projIdx].kasten||[];
+  var totalKabels=0,totalDone=0,totalHours=0;
+  kasten.forEach(function(k){
+    totalHours+=(k.meerwerkHours||0);
+    (k.meerwerk||[]).forEach(function(m){totalKabels++;if(mwKabelPct(m)===100)totalDone++;});
+  });
+  var totEl=document.querySelector('.kt-val.mw-total-uur');
+  if(totEl)totEl.textContent=totalDone+'/'+totalKabels+' voltooid · '+totalHours+' uur';
 }
 
 function delMw(el){
@@ -1052,7 +1145,121 @@ function saveMeerwerk(){
   var kast=d[VIEW.projIdx].kasten[ki];
   if(!kast.meerwerk)kast.meerwerk=[];
   kast.meerwerk.push({id:uid(),no:no.trim(),checks:{}});
+  // Auto-create panel if prefix doesn't exist
+  var pfxMatch=no.trim().match(/^([^0-9]+)/);
+  if(pfxMatch){
+    var pfx=pfxMatch[1];
+    if(!kast.panels)kast.panels=[];
+    var hasPanel=kast.panels.some(function(p){return p.prefix.toLowerCase()===pfx.toLowerCase();});
+    if(!hasPanel){
+      kast.panels.push({id:uid(),prefix:pfx,kabels:[],open:true});
+    }
+  }
   dbSet(d);closeSheet();renderKasten();
+}
+
+// --- KAST LAYOUT PDF ---
+// --- KAST PDF ---
+function exportKastPDF(){
+  var d=dbGet();
+  var proj=d[VIEW.projIdx];
+  var kast=d[VIEW.projIdx].kasten[VIEW.kastIdx];
+  var colLabels=COLS.map(function(c){return c.label;});
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>'+kast.no+' - '+proj.naam+'</title><style>';
+  html+='body{font-family:Arial,sans-serif;font-size:11px;color:#111;margin:20px;}';
+  html+='h1{font-size:18px;font-weight:800;text-align:center;margin-bottom:4px;}';
+  html+='.proj-sub{text-align:center;font-size:11px;color:#666;margin-bottom:20px;}';
+  html+='.panel-title{font-size:11px;font-weight:700;background:#e8edf4;padding:6px 12px;border-left:3px solid #2563eb;margin:12px 0 0;}';
+  html+='table{width:100%;border-collapse:collapse;margin-bottom:0;}';
+  html+='th{background:#f1f5f9;padding:6px 8px;text-align:center;font-size:9px;font-weight:700;text-transform:uppercase;border:1px solid #cbd5e1;}';
+  html+='th.th-k{text-align:left;}';
+  html+='td{padding:5px 8px;border:1px solid #e2e8f0;text-align:center;font-size:10px;}';
+  html+='td.td-k{text-align:left;font-family:monospace;font-weight:600;}';
+  html+='.chk-on{color:#10b981;font-weight:700;font-size:13px;}';
+  html+='.chk-off{color:#cbd5e1;}';
+  html+='.pct-100{color:#10b981;font-weight:700;}';
+  html+='.pct-part{color:#0891b2;}';
+  html+='.kast-total{background:#f8fafc;padding:6px 12px;font-size:11px;display:flex;justify-content:space-between;border:1px solid #e2e8f0;border-top:2px solid #2563eb;margin-bottom:8px;}';
+  html+='@page{margin:10mm;}@media print{.no-print{display:none;}header,footer{display:none!important;}}';
+  html+='</style></head><body>';
+  html+='<div class="no-print" style="text-align:center;margin-bottom:16px;"><button onclick="window.print()" style="background:#2563eb;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Afdrukken / PDF opslaan</button><div style="font-size:10px;color:#888;margin-top:6px;">Schakel "Kop- en voetteksten" uit bij het afdrukken</div></div>';
+  html+='<h1>'+kast.no+(kast.naam?' &ndash; '+kast.naam:'')+'</h1>';
+  
+  var totalKabels=0;var totalDone=0;
+  (kast.panels||[]).forEach(function(p){totalKabels+=(p.kabels||[]).length;(p.kabels||[]).forEach(function(k){if(kabelPct(k)===100)totalDone++;});});
+  (kast.meerwerk||[]).forEach(function(m){totalKabels++;if(mwKabelPct(m)===100)totalDone++;});
+  html+='<div class="proj-sub">'+proj.naam+' &nbsp;|&nbsp; '+totalKabels+' kabels &nbsp;|&nbsp; '+totalDone+'/'+totalKabels+' voltooid &nbsp;|&nbsp; '+kastPct(kast)+'%</div>';
+
+  // Panels
+  (kast.panels||[]).forEach(function(panel){
+    var kb=panel.kabels||[];
+    var mwForPanel=(kast.meerwerk||[]).filter(function(m){return panel.prefix&&m.no.toLowerCase().indexOf(panel.prefix.toLowerCase())===0;});
+    var allKabels=kb.concat(mwForPanel);
+    var pDone=allKabels.filter(function(k){return anyPct(k)===100;}).length;
+    var pPct=allKabels.length?Math.round(allKabels.reduce(function(s,k){return s+anyPct(k);},0)/allKabels.length):0;
+    html+='<div class="panel-title">Panel '+panel.prefix+' &nbsp;·&nbsp; '+allKabels.length+' kabels &nbsp;·&nbsp; '+pPct+'%</div>';
+    html+='<table><thead><tr><th class="th-k">Kabel</th>';
+    colLabels.forEach(function(l){html+='<th>'+l+'</th>';});
+    html+='<th>%</th></tr></thead><tbody>';
+    kb.forEach(function(kabel){
+      var kp=kabelPct(kabel);
+      html+='<tr><td class="td-k">'+kabel.no+'</td>';
+      COLS.forEach(function(col){var on=kabel.checks&&kabel.checks[col.key];html+='<td class="'+(on?'chk-on':'chk-off')+'">'+(on?'&#10003;':'-')+'</td>';});
+      html+='<td class="'+(kp===100?'pct-100':kp>0?'pct-part':'')+'">'+kp+'%</td></tr>';
+    });
+    // Meerwerk rows for this panel
+    mwForPanel.forEach(function(m){
+      var kp=mwKabelPct(m);
+      html+='<tr style="background:#fffbeb;"><td class="td-k" style="color:#b45309;font-weight:700;">'+m.no+' <span style="font-size:8px;">(MW)</span></td>';
+      COLS.forEach(function(col){var on=m.checks&&m.checks[col.key];html+='<td class="'+(on?'chk-on':'chk-off')+'">'+(on?'&#10003;':'-')+'</td>';});
+      html+='<td class="'+(kp===100?'pct-100':kp>0?'pct-part':'')+'">'+kp+'%</td></tr>';
+    });
+    html+='</tbody></table>';
+  });
+
+  // Unmatched meerwerk
+  var allPfx=(kast.panels||[]).map(function(p){return p.prefix.toLowerCase();});
+  var overig=(kast.meerwerk||[]).filter(function(m){return !allPfx.some(function(pfx){return pfx&&m.no.toLowerCase().indexOf(pfx)===0;});});
+  if(overig.length){
+    var mwHours=kast.meerwerkHours||0;
+    html+='<div class="panel-title" style="border-color:#f59e0b;background:#fffbeb;">Meerwerk &nbsp;·&nbsp; '+overig.length+' kabels &nbsp;·&nbsp; '+mwHours+' uur</div>';
+    html+='<table><thead><tr><th class="th-k">Kabel</th>';
+    colLabels.forEach(function(l){html+='<th>'+l+'</th>';});
+    html+='<th>%</th></tr></thead><tbody>';
+    overig.forEach(function(m){
+      var kp=mwKabelPct(m);
+      html+='<tr style="background:#fffbeb;"><td class="td-k" style="color:#b45309;">'+m.no+'</td>';
+      COLS.forEach(function(col){var on=m.checks&&m.checks[col.key];html+='<td class="'+(on?'chk-on':'chk-off')+'">'+(on?'&#10003;':'-')+'</td>';});
+      html+='<td class="'+(kp===100?'pct-100':kp>0?'pct-part':'')+'">'+kp+'%</td></tr>';
+    });
+    html+='</tbody></table>';
+  }
+
+  html+='<div class="kast-total"><span>Kast totaal: '+kastPct(kast)+'%</span><span>'+totalDone+'/'+totalKabels+' voltooid</span></div>';
+  html+='</body></html>';
+
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:#fff;z-index:500;display:flex;flex-direction:column;';
+  var tb=document.createElement('div');
+  tb.style.cssText='background:#0d1b2a;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;';
+  var ttl=document.createElement('span');ttl.style.cssText='color:#fff;font-size:13px;font-weight:700;';ttl.textContent=kast.no+' - '+proj.naam;
+  var btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;';
+  var btnClose=document.createElement('button');btnClose.textContent='Sluiten';
+  btnClose.style.cssText='background:#1e3a5f;color:#7dd3fc;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;';
+  btnClose.addEventListener('click',function(){ov.remove();});
+  var btnDl=document.createElement('button');btnDl.textContent='Downloaden';
+  btnDl.style.cssText='background:#2563eb;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;';
+  btnDl.addEventListener('click',function(){
+    var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download=kast.no+'-'+proj.naam+'.html';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  });
+  btnRow.appendChild(btnDl);btnRow.appendChild(btnClose);
+  tb.appendChild(ttl);tb.appendChild(btnRow);
+  var iframe=document.createElement('iframe');iframe.style.cssText='flex:1;border:none;width:100%;';
+  iframe.srcdoc=html;
+  ov.appendChild(tb);ov.appendChild(iframe);document.body.appendChild(ov);
 }
 
 // --- MEERWERK PDF ---
@@ -1172,10 +1379,14 @@ function exportPDF(){
     var kTot=0,kDone=0;
     (kast.panels||[]).forEach(function(panel){
       var kb=panel.kabels||[];
-      kTot+=kb.length;
+      var mwForPdf=(kast.meerwerk||[]).filter(function(m){return panel.prefix&&m.no.toLowerCase().indexOf(panel.prefix.toLowerCase())===0;});
+      kTot+=kb.length+mwForPdf.length;
       kb.forEach(function(k){if(kabelPct(k)===100)kDone++;});
-      var ppct=kb.length?Math.round(kb.reduce(function(s,k){return s+kabelPct(k);},0)/kb.length):0;
-      html+='<div class="panel-title">Panel '+panel.prefix+' &nbsp;·&nbsp; '+kb.length+' kabels &nbsp;·&nbsp; '+ppct+'%</div>';
+      mwForPdf.forEach(function(m){if(mwKabelPct(m)===100)kDone++;});
+      var mwForPpct=(kast.meerwerk||[]).filter(function(m){return panel.prefix&&m.no.toLowerCase().indexOf(panel.prefix.toLowerCase())===0;});
+    var allForPanel=kb.concat(mwForPpct);
+    var ppct=allForPanel.length?Math.round(allForPanel.reduce(function(s,k){return s+anyPct(k);},0)/allForPanel.length):0;
+      html+='<div class="panel-title">Panel '+panel.prefix+' &nbsp;·&nbsp; '+(kb.length+mwForPpct.length)+' kabels &nbsp;·&nbsp; '+ppct+'%</div>';
       html+='<table><thead><tr><th class="th-k">Kabel</th>';
       colLabels.forEach(function(l){html+='<th>'+l+'</th>';});
       html+='<th>%</th></tr></thead><tbody>';
@@ -1189,26 +1400,35 @@ function exportPDF(){
         });
         html+='<td class="'+pctCls+'">'+kp+'%</td></tr>';
       });
-      html+='</tbody></table>';
-    });
-    // Add meerwerk to PDF if exists
-    var mw=kast.meerwerk||[];
-    if(mw.length){
-      var mwTotalHours=kast.meerwerkHours||0;
-      html+='<div class="panel-title" style="border-color:#f59e0b;margin-top:8px;">Meerwerk &nbsp;·&nbsp; '+mw.length+' kabels &nbsp;·&nbsp; '+mwTotalHours+' uur totaal</div>';
-      html+='<table><thead><tr><th class="th-k">Kabel</th>';
-      colLabels.forEach(function(l){html+='<th>'+l+'</th>';});
-      html+='<th>%</th></tr></thead><tbody>';
-      mw.forEach(function(m){
+      // Add meerwerk rows for this panel inline
+      mwForPdf.forEach(function(m){
         var kp=mwKabelPct(m);
         var pctCls=kp===100?'pct-100':kp>0?'pct-part':'';
-        html+='<tr><td class="td-k">'+m.no+'</td>';
+        html+='<tr style="background:#fffbeb;"><td class="td-k" style="color:#b45309;font-weight:700;">'+m.no+' <span style="font-size:8px;color:#b45309;">(MW)</span></td>';
         COLS.forEach(function(col){var on=m.checks&&m.checks[col.key];html+='<td class="'+(on?'chk-on':'chk-off')+'">'+(on?'&#10003;':'-')+'</td>';});
         html+='<td class="'+pctCls+'">'+kp+'%</td></tr>';
       });
       html+='</tbody></table>';
+    });
+    // Unmatched meerwerk - prefix doesn't match any panel
+    var allPfxPDF=(kast.panels||[]).map(function(p){return p.prefix.toLowerCase();});
+    var overigPDF=(kast.meerwerk||[]).filter(function(m){return !allPfxPDF.some(function(pfx){return pfx&&m.no.toLowerCase().indexOf(pfx)===0;});});
+    if(overigPDF.length){
+      var mwHoursPDF=kast.meerwerkHours||0;
+      kTot+=overigPDF.length;overigPDF.forEach(function(m){if(mwKabelPct(m)===100)kDone++;});
+      html+='<div class="panel-title" style="border-left-color:#f59e0b;background:#fffbeb;">Meerwerk &nbsp;·&nbsp; '+overigPDF.length+' kabels &nbsp;·&nbsp; '+mwHoursPDF+' uur</div>';
+      html+='<table><thead><tr><th class="th-k">Kabel</th>';
+      colLabels.forEach(function(l){html+='<th>'+l+'</th>';});
+      html+='<th>%</th></tr></thead><tbody>';
+      overigPDF.forEach(function(m){
+        var kp=mwKabelPct(m);
+        html+='<tr style="background:#fffbeb;"><td class="td-k" style="color:#b45309;">'+m.no+'</td>';
+        COLS.forEach(function(col){var on=m.checks&&m.checks[col.key];html+='<td class="'+(on?'chk-on':'chk-off')+'">'+(on?'&#10003;':'-')+'</td>';});
+        html+='<td class="'+(kp===100?'pct-100':kp>0?'pct-part':'')+'">'+kp+'%</td></tr>';
+      });
+      html+='</tbody></table>';
     }
-    html+='<div class="kast-total"><span>Kast totaal: '+kpct+'%</span><span>'+kDone+'/'+kTot+' voltooid</span></div>';
+        html+='<div class="kast-total"><span>Kast totaal: '+kpct+'%</span><span>'+kDone+'/'+kTot+' voltooid</span></div>';
     if(ki<kasten.length-1)html+='<div class="page-break"></div>';
   });
   html+='</div></body></html>';
