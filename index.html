@@ -120,15 +120,30 @@ tr:last-child td{border-bottom:none;}
 </head>
 <body>
 <div id="lock-screen" style="position:fixed;inset:0;background:#0a0f1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#111827;border:1px solid #2d3f5c;border-radius:20px;padding:32px 24px;max-width:320px;width:100%;text-align:center;">
-    <div style="width:56px;height:56px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+  <div style="background:#111827;border:1px solid #2d3f5c;border-radius:20px;padding:32px 24px;max-width:320px;width:100%;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="width:56px;height:56px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      </div>
+      <div style="font-size:20px;font-weight:800;color:#f1f5f9;margin-bottom:4px;">Project Manager</div>
     </div>
-    <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:6px;">Project Manager</div>
-    <div style="font-size:12px;color:#64748b;margin-bottom:24px;">Voer je wachtwoord in</div>
-    <input type="password" id="pwd-input" placeholder="Wachtwoord" style="width:100%;background:#0a0f1e;border:1px solid #2d3f5c;border-radius:10px;padding:12px 14px;color:#f1f5f9;font-size:16px;font-family:inherit;outline:none;text-align:center;letter-spacing:4px;margin-bottom:12px;" onkeydown="if(event.key==='Enter')checkPwd()"/>
-    <div id="pwd-error" style="color:#ef4444;font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-    <button onclick="checkPwd()" style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;">Inloggen</button>
+    <div style="display:flex;background:#0a0f1e;border-radius:10px;padding:4px;margin-bottom:20px;">
+      <button id="tab-login" onclick="switchTab('login')" style="flex:1;padding:8px;border:none;border-radius:7px;background:#2563eb;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Inloggen</button>
+      <button id="tab-register" onclick="switchTab('register')" style="flex:1;padding:8px;border:none;border-radius:7px;background:none;color:#64748b;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Registreren</button>
+    </div>
+    <div id="form-login">
+      <input type="text" id="login-user" placeholder="Gebruikersnaam" style="width:100%;background:#0a0f1e;border:1px solid #2d3f5c;border-radius:10px;padding:12px 14px;color:#f1f5f9;font-size:15px;font-family:inherit;outline:none;margin-bottom:8px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <input type="password" id="login-pwd" placeholder="Wachtwoord" style="width:100%;background:#0a0f1e;border:1px solid #2d3f5c;border-radius:10px;padding:12px 14px;color:#f1f5f9;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div id="login-error" style="color:#ef4444;font-size:12px;margin-bottom:10px;min-height:16px;text-align:center;"></div>
+      <button onclick="doLogin()" style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;">Inloggen</button>
+    </div>
+    <div id="form-register" style="display:none;">
+      <input type="text" id="reg-name" placeholder="Volledige naam" style="width:100%;background:#0a0f1e;border:1px solid #2d3f5c;border-radius:10px;padding:12px 14px;color:#f1f5f9;font-size:15px;font-family:inherit;outline:none;margin-bottom:8px;"/>
+      <input type="text" id="reg-user" placeholder="Gebruikersnaam (bijv. mert)" style="width:100%;background:#0a0f1e;border:1px solid #2d3f5c;border-radius:10px;padding:12px 14px;color:#f1f5f9;font-size:15px;font-family:inherit;outline:none;margin-bottom:8px;"/>
+      <input type="password" id="reg-pwd" placeholder="Wachtwoord" style="width:100%;background:#0a0f1e;border:1px solid #2d3f5c;border-radius:10px;padding:12px 14px;color:#f1f5f9;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;"/>
+      <div id="reg-error" style="color:#ef4444;font-size:12px;margin-bottom:10px;min-height:16px;text-align:center;"></div>
+      <button onclick="doRegister()" style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;">Registreren</button>
+    </div>
   </div>
 </div>
 <div id="app" style="display:none;">
@@ -158,7 +173,7 @@ var COLS=[
 
 // --- DB ---
 function dbGet(){try{return JSON.parse(localStorage.getItem('kt3')||'[]');}catch(e){return[];}}
-function dbSet(d){localStorage.setItem('kt3',JSON.stringify(d));}
+function dbSet(d){localStorage.setItem('kt3',JSON.stringify(d));syncToCloud(d);}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 function pad(n,len){var s=String(n);while(s.length<len)s='0'+s;return s;}
 
@@ -1462,9 +1477,12 @@ function exportPDF(){
 }
 
 // --- CLOUDFLARE SYNC ---
-var API_URL = 'https://project-manager-api.muminmertozturk.workers.dev';
+var PM_API = 'https://pm-api.muminmertozturk.workers.dev';
+var AUTH_API = 'https://pm-auth-api.muminmertozturk.workers.dev';
+var CURRENT_USER = null;
+var CURRENT_TOKEN = null;
+var CURRENT_NAME = null;
 var syncTimer = null;
-var lastSyncTime = null;
 
 function dbGet(){
   try{return JSON.parse(localStorage.getItem('kt3')||'[]');}catch(e){return[];}
@@ -1477,33 +1495,43 @@ function dbSet(d){
 }
 
 function syncToCloud(data){
-  fetch(API_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(data)
-  }).then(function(){
-    lastSyncTime=new Date();
-    updateSyncStatus('Gesynchroniseerd ✓');
-  }).catch(function(){
-    updateSyncStatus('Sync mislukt ✗');
-  });
+  if(!CURRENT_USER||!CURRENT_TOKEN)return;
+  if(syncTimer)clearTimeout(syncTimer);
+  syncTimer=setTimeout(function(){
+    fetch(PM_API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Username':CURRENT_USER,'X-Token':CURRENT_TOKEN},
+      body:JSON.stringify(data)
+    }).then(function(){
+      updateSyncStatus('Gesynchroniseerd ✓');
+    }).catch(function(){
+      updateSyncStatus('Sync mislukt ✗');
+    });
+  },1500);
 }
 
 function loadFromCloud(){
+  if(!CURRENT_USER||!CURRENT_TOKEN)return;
   updateSyncStatus('Laden...');
-  fetch(API_URL)
-    .then(function(r){return r.json();})
-    .then(function(data){
+  fetch(PM_API,{
+    headers:{'X-Username':CURRENT_USER,'X-Token':CURRENT_TOKEN}
+  }).then(function(r){
+    if(r.status===401||r.status===403){
+      updateSyncStatus('Sessie verlopen');return;
+    }
+    return r.json();
+  }).then(function(data){
+    if(data&&Array.isArray(data)){
       localStorage.setItem('kt3',JSON.stringify(data));
-      lastSyncTime=new Date();
-      updateSyncStatus('Geladen ✓');
-      render();
-    })
-    .catch(function(){
-      updateSyncStatus('Offline - lokale data');
-      render();
-    });
+    }
+    updateSyncStatus('Geladen ✓');
+    setView('projects');
+  }).catch(function(){
+    updateSyncStatus('Offline');
+    setView('projects');
+  });
 }
+
 
 function updateSyncStatus(msg){
   var el=document.getElementById('sync-status');
@@ -1535,23 +1563,75 @@ function customConfirm(msg, onYes){
 }
 
 // --- PASSWORD ---
-function checkPwd(){
-  var pwd=document.getElementById('pwd-input').value;
-  if(pwd==='78159228Mo'){
-    document.getElementById('lock-screen').remove();
-    document.getElementById('app').style.display='flex';
-    setView('projects');
-    loadFromCloud();
+function switchTab(tab){
+  var loginForm=document.getElementById('form-login');
+  var regForm=document.getElementById('form-register');
+  var tabLogin=document.getElementById('tab-login');
+  var tabReg=document.getElementById('tab-register');
+  if(tab==='login'){
+    loginForm.style.display='';regForm.style.display='none';
+    tabLogin.style.background='#2563eb';tabLogin.style.color='#fff';
+    tabReg.style.background='none';tabReg.style.color='#64748b';
   } else {
-    var err=document.getElementById('pwd-error');
-    err.textContent='Onjuist wachtwoord';
-    var inp=document.getElementById('pwd-input');
-    inp.value='';
-    inp.style.borderColor='#ef4444';
-    setTimeout(function(){inp.style.borderColor='#2d3f5c';err.textContent='';},2000);
+    loginForm.style.display='none';regForm.style.display='';
+    tabReg.style.background='#2563eb';tabReg.style.color='#fff';
+    tabLogin.style.background='none';tabLogin.style.color='#64748b';
   }
 }
-setTimeout(function(){var e=document.getElementById('pwd-input');if(e)e.focus();},200);
+
+function doLogin(){
+  var usr=(document.getElementById('login-user')||{}).value.trim().toLowerCase();
+  var pwd=(document.getElementById('login-pwd')||{}).value;
+  var err=document.getElementById('login-error');
+  if(!usr||!pwd){err.textContent='Vul alle velden in';return;}
+  err.textContent='Bezig...';
+  fetch(AUTH_API+'/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:usr,password:pwd})
+  }).then(function(r){return r.json();})
+  .then(function(data){
+    if(data.error){
+      if(data.error==='pending'){err.textContent='Account wacht op goedkeuring van admin.';return;}
+      if(data.error==='rejected'){err.textContent='Account is afgewezen.';return;}
+      err.textContent=data.error;return;
+    }
+    CURRENT_USER=data.username;
+    CURRENT_TOKEN=data.token;
+    CURRENT_NAME=data.name;
+    document.getElementById('lock-screen').remove();
+    document.getElementById('app').style.display='flex';
+    var hdrSub=document.getElementById('hdr-sub');
+    if(hdrSub)hdrSub.textContent=data.name;
+    loadFromCloud();
+  }).catch(function(){err.textContent='Verbindingsfout';});
+}
+
+function doRegister(){
+  var name=(document.getElementById('reg-name')||{}).value.trim();
+  var usr=(document.getElementById('reg-user')||{}).value.trim().toLowerCase().replace(/\s+/g,'-');
+  var pwd=(document.getElementById('reg-pwd')||{}).value;
+  var err=document.getElementById('reg-error');
+  if(!name||!usr||!pwd){err.textContent='Vul alle velden in';return;}
+  if(usr.length<3){err.textContent='Gebruikersnaam min 3 tekens';return;}
+  err.textContent='Bezig...';
+  fetch(AUTH_API+'/register',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:usr,name:name,password:pwd})
+  }).then(function(r){return r.json();})
+  .then(function(data){
+    if(data.error){err.textContent=data.error;return;}
+    err.style.color='#34d399';
+    err.textContent='Registratie succesvol! Wacht op goedkeuring van admin.';
+    document.getElementById('reg-name').value='';
+    document.getElementById('reg-user').value='';
+    document.getElementById('reg-pwd').value='';
+  }).catch(function(){err.textContent='Verbindingsfout';});
+}
+
+// --- INIT ---
+setView('projects');
 </script>
-</div></body>
+</body>
 </html>
