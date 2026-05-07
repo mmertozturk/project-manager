@@ -4,115 +4,77 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="ZZP Manager"/>
 <meta name="theme-color" content="#0d1b2a"/>
 <title>ZZP Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
 <style>
-:root{
-  --bg:#0d1b2a;--navy:#122035;--navy2:#1a2d45;--navy3:#223558;
-  --blue:#1a6fbf;--blue2:#2281d4;--accent:#4fc3f7;
-  --success:#10b981;--warn:#f59e0b;--danger:#ef4444;
-  --text:#e2eaf4;--muted:#7a9bbf;--muted2:#4a6a8a;
-  --border:#1e3352;--border2:#2d4a6a;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
-}
+:root{--bg:#0d1b2a;--navy:#122035;--navy2:#1a2d45;--navy3:#223558;--blue:#1a6fbf;--accent:#4fc3f7;--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--text:#e2eaf4;--muted:#7a9bbf;--muted2:#4a6a8a;--border:#1e3352;--border2:#2d4a6a;--safe-bottom:env(safe-area-inset-bottom,0px);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);overflow:hidden;}
-#app{display:flex;flex-direction:column;height:100%;padding-top:var(--safe-top);}
-
-/* HEADER */
+#app{display:flex;flex-direction:column;height:100%;}
 .top-bar{background:linear-gradient(135deg,#0d1b2a,#122035);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.app-logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:32px;height:32px;background:var(--blue);border-radius:9px;display:flex;align-items:center;justify-content:center;}
-.app-name{font-size:15px;font-weight:800;color:var(--text);}
+.app-name{font-size:15px;font-weight:800;}
 .sync-status{font-size:9px;color:var(--muted2);margin-top:1px;}
-.top-right{display:flex;align-items:center;gap:8px;}
 .fab-top{background:var(--blue);color:#fff;border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
-
-/* CONTENT */
 #content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(70px + var(--safe-bottom));}
-
-/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-bottom);z-index:10;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px 8px;border:none;background:none;color:var(--muted2);font-size:9px;font-family:inherit;font-weight:700;cursor:pointer;transition:color .15s;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px 8px;border:none;background:none;color:var(--muted2);font-size:9px;font-family:inherit;font-weight:700;cursor:pointer;}
 .nav-btn.active{color:var(--accent);}
 .nav-btn svg{width:20px;height:20px;}
-
-/* PAGE */
 .page{padding:16px;}
-.page-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:16px;}
-
-/* STAT GRID */
+.page-title{font-size:20px;font-weight:800;margin-bottom:16px;}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
 .stat{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:14px;}
 .stat-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
 .stat-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-
-/* CARD */
 .card{background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
 .card-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
-
-/* ROW */
 .row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
 .row:last-child{border-bottom:none;}
 .row-main{flex:1;min-width:0;}
-.row-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .row-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.row-amount{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;text-align:right;flex-shrink:0;margin-left:10px;}
-.row-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;flex-shrink:0;}
-.status-beklemende{background:rgba(245,158,11,.15);color:var(--warn);}
+.row-amount{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;text-align:right;flex-shrink:0;margin-left:8px;}
+.row-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;flex-shrink:0;}
+.status-openstaand{background:rgba(245,158,11,.15);color:var(--warn);}
 .status-betaald{background:rgba(16,185,129,.15);color:var(--success);}
-.status-gecikmis{background:rgba(239,68,68,.15);color:var(--danger);}
-.status-iptal{background:rgba(100,116,139,.15);color:#64748b;}
-
-/* EMPTY */
-.empty-state{text-align:center;padding:50px 20px;color:var(--muted2);}
-.empty-state svg{width:48px;height:48px;opacity:.3;margin-bottom:12px;}
-.empty-title{font-size:15px;font-weight:700;margin-bottom:6px;}
-
-/* SHEET */
+.status-telaat{background:rgba(239,68,68,.15);color:var(--danger);}
+.status-geannuleerd{background:rgba(100,116,139,.15);color:#64748b;}
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-end;}
 .sheet{background:var(--navy);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px calc(20px + var(--safe-bottom));border-top:1px solid var(--border2);}
 .sheet-handle{width:40px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 16px;}
 .sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
 .sheet-title{font-size:17px;font-weight:800;}
 .sheet-close{background:var(--navy2);border:none;color:var(--muted);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
-
-/* FORM */
 .fl{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;margin-top:14px;}
 .form-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px 13px;color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;}
 .form-input:focus{border-color:var(--accent);}
 select.form-input{cursor:pointer;}
-.amount-input{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;text-align:center;border-color:var(--blue2);}
+.amount-input{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;text-align:center;border-color:var(--blue);}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .btn-primary{width:100%;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:16px;}
 .btn-secondary{width:100%;background:var(--navy2);color:var(--muted);border:1px solid var(--border2);border-radius:12px;padding:12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:8px;}
 .btn-danger{width:100%;background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:8px;}
-
-/* TABS */
 .subtab-row{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:14px;}
 .subtab{flex:1;padding:8px;border:none;border-radius:8px;background:none;color:var(--muted);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
 .subtab.active{background:var(--blue);color:#fff;}
-
-/* CONFIRM */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .confirm-box{background:var(--navy);border:1px solid var(--border2);border-radius:16px;padding:24px;max-width:300px;width:100%;text-align:center;}
 .confirm-msg{font-size:15px;font-weight:700;margin-bottom:20px;}
 .confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .confirm-no{background:var(--navy2);border:none;color:var(--muted);border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
 .confirm-yes{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--danger);border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
+.two-col{display:flex;gap:10px;}
+.two-col > div{flex:1;min-width:0;}
 </style>
 </head>
 <body>
 <div id="lock-screen" style="position:fixed;inset:0;background:#0d1b2a;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
   <div style="background:#122035;border:1px solid #1e3352;border-radius:20px;padding:32px 24px;max-width:320px;width:100%;">
     <div style="text-align:center;margin-bottom:20px;">
-      <div style="width:56px;height:56px;background:#1a6fbf;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      </div>
-      <div style="font-size:20px;font-weight:800;color:#e2eaf4;margin-bottom:4px;">ZZP Manager</div>
+      <div style="width:56px;height:56px;background:#1a6fbf;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div style="font-size:20px;font-weight:800;color:#e2eaf4;">ZZP Manager</div>
     </div>
     <div style="display:flex;background:#0d1b2a;border-radius:10px;padding:4px;margin-bottom:20px;">
       <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;border-radius:7px;background:#1a6fbf;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Inloggen</button>
@@ -126,7 +88,7 @@ select.form-input{cursor:pointer;}
     </div>
     <div id="form-register" style="display:none;">
       <input type="text" id="reg-name" placeholder="Volledige naam" style="width:100%;background:#0d1b2a;border:1px solid #1e3352;border-radius:10px;padding:12px 14px;color:#e2eaf4;font-size:15px;font-family:inherit;outline:none;margin-bottom:8px;"/>
-      <input type="text" id="reg-user" placeholder="Gebruikersnaam (bijv. mert)" style="width:100%;background:#0d1b2a;border:1px solid #1e3352;border-radius:10px;padding:12px 14px;color:#e2eaf4;font-size:15px;font-family:inherit;outline:none;margin-bottom:8px;"/>
+      <input type="text" id="reg-user" placeholder="Gebruikersnaam" style="width:100%;background:#0d1b2a;border:1px solid #1e3352;border-radius:10px;padding:12px 14px;color:#e2eaf4;font-size:15px;font-family:inherit;outline:none;margin-bottom:8px;"/>
       <input type="password" id="reg-pwd" placeholder="Wachtwoord" style="width:100%;background:#0d1b2a;border:1px solid #1e3352;border-radius:10px;padding:12px 14px;color:#e2eaf4;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;"/>
       <div id="reg-error" style="color:#ef4444;font-size:12px;margin-bottom:10px;min-height:16px;text-align:center;"></div>
       <button onclick="doRegister()" style="width:100%;background:#1a6fbf;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;">Registreren</button>
@@ -135,69 +97,59 @@ select.form-input{cursor:pointer;}
 </div>
 <div id="app" style="display:none;">
   <div class="top-bar">
-    <div class="app-logo">
-      <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      </div>
-      <div>
-        <div class="app-name">ZZP Manager</div>
-        <div class="sync-status" id="sync-status">Gereed</div>
-      </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><div class="app-name">ZZP Manager</div><div class="sync-status" id="sync-status">Gereed</div></div>
     </div>
-    <div class="top-right">
-      <button class="fab-top" id="fab-btn" onclick="openFab()">+ Toevoegen</button>
-    </div>
+    <button class="fab-top" onclick="openFab()">+ Toevoegen</button>
   </div>
-
   <div id="content"></div>
-
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="dashboard" onclick="showTab('dashboard')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Dashboard
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
     </button>
     <button class="nav-btn" data-tab="invoices" onclick="showTab('invoices')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Facturen
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Facturen
     </button>
     <button class="nav-btn" data-tab="expenses" onclick="showTab('expenses')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      Uitgaven
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Uitgaven
     </button>
     <button class="nav-btn" data-tab="calendar" onclick="showTab('calendar')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Kalender
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Kalender
     </button>
     <button class="nav-btn" data-tab="settings" onclick="showTab('settings')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      Instellingen
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Instellingen
     </button>
   </nav>
 </div>
-
 <script>
-var ZZP_AUTH = 'https://zzp-auth-api.muminmertozturk.workers.dev';
-var ZZP_API = 'https://zzp-api.muminmertozturk.workers.dev';
-var CURRENT_USER = null;
-var CURRENT_TOKEN = null;
-var CURRENT_NAME = null;
+var ZZP_AUTH='https://zzp-auth-api.muminmertozturk.workers.dev';
+var ZZP_API='https://zzp-api.muminmertozturk.workers.dev';
+var CURRENT_USER=null,CURRENT_TOKEN=null,CURRENT_NAME=null;
+var _syncTimer=null,currentTab='dashboard',expTab='personal',invSort='date';
+var INV_STATUSES=['Openstaand','Betaald','Te laat','Geannuleerd'];
+var ZAK_CATS=['Gereedschap / Materiaal','Auto & Reiskosten','Telefoon & Internet','Software & Abonnementen','Verzekeringen','Opleiding & Cursussen','Marketing & Reclame','Kantoorbenodigdheden','Representatie','Administratie & Boekhouding','Overig zakelijk'];
+var PRIV_CATS=['Boodschappen','Huur & Energie','Zorgkosten','Transport','Kleding','Horeca','Overig privé'];
+
+var DB={
+  get:function(k){try{return JSON.parse(localStorage.getItem('zzpm_'+k)||'[]');}catch(e){return[];}},
+  set:function(k,v){localStorage.setItem('zzpm_'+k,JSON.stringify(v));autoSync();}
+};
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function pa(s){return parseFloat(String(s).replace(',','.'))||0;}
+function fmtEUR(n){return'€ '+pa(n).toFixed(2).replace('.',',');}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addDays(ds,n){var d=new Date(ds+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmtDate(ds){if(!ds)return'';var p=ds.split('-');return p[2]+'-'+p[1]+'-'+p[0];}
+function updateSyncStatus(msg){var el=document.getElementById('sync-status');if(el)el.textContent=msg;}
+function statusClass(s){return'status-'+s.toLowerCase().replace(/\s+/g,'').replace('telaat','telaat');}
 
 function switchAuthTab(tab){
-  var lf=document.getElementById('form-login');
-  var rf=document.getElementById('form-register');
-  var tl=document.getElementById('tab-login');
-  var tr=document.getElementById('tab-register');
-  if(tab==='login'){
-    lf.style.display='';rf.style.display='none';
-    tl.style.background='#1a6fbf';tl.style.color='#fff';
-    tr.style.background='none';tr.style.color='#4a6a8a';
-  } else {
-    rf.style.display='';lf.style.display='none';
-    tr.style.background='#1a6fbf';tr.style.color='#fff';
-    tl.style.background='none';tl.style.color='#4a6a8a';
-  }
+  var lf=document.getElementById('form-login'),rf=document.getElementById('form-register');
+  var tl=document.getElementById('tab-login'),tr=document.getElementById('tab-register');
+  if(tab==='login'){lf.style.display='';rf.style.display='none';tl.style.background='#1a6fbf';tl.style.color='#fff';tr.style.background='none';tr.style.color='#4a6a8a';}
+  else{rf.style.display='';lf.style.display='none';tr.style.background='#1a6fbf';tr.style.color='#fff';tl.style.background='none';tl.style.color='#4a6a8a';}
 }
-
 function doLogin(){
   var usr=(document.getElementById('login-user')||{}).value.trim().toLowerCase();
   var pwd=(document.getElementById('login-pwd')||{}).value;
@@ -207,40 +159,36 @@ function doLogin(){
   fetch(ZZP_AUTH+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:usr,password:pwd})})
     .then(function(r){return r.json();})
     .then(function(data){
-      if(data.error){
-        if(data.error==='pending'){err.textContent='Account wacht op goedkeuring van admin.';return;}
-        if(data.error==='rejected'){err.textContent='Account is afgewezen.';return;}
-        err.textContent=data.error;return;
-      }
+      if(data.error){if(data.error==='pending'){err.textContent='Wacht op goedkeuring.';return;}if(data.error==='rejected'){err.textContent='Account afgewezen.';return;}err.textContent=data.error;return;}
       CURRENT_USER=data.username;CURRENT_TOKEN=data.token;CURRENT_NAME=data.name;
-      document.getElementById('lock-screen').remove();
-      document.getElementById('app').style.display='flex';
+      document.getElementById('lock-screen').remove();document.getElementById('app').style.display='flex';
       loadFromCloud();
     }).catch(function(){err.textContent='Verbindingsfout';});
 }
-
 function doRegister(){
   var name=(document.getElementById('reg-name')||{}).value.trim();
   var usr=(document.getElementById('reg-user')||{}).value.trim().toLowerCase().replace(/\s+/g,'-');
   var pwd=(document.getElementById('reg-pwd')||{}).value;
   var err=document.getElementById('reg-error');
   if(!name||!usr||!pwd){err.textContent='Vul alle velden in';return;}
-  if(usr.length<3){err.textContent='Gebruikersnaam min 3 tekens';return;}
   err.textContent='Bezig...';
   fetch(ZZP_AUTH+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:usr,name:name,password:pwd})})
     .then(function(r){return r.json();})
     .then(function(data){
       if(data.error){err.textContent=data.error;return;}
-      err.style.color='#34d399';
-      err.textContent='Geregistreerd! Wacht op goedkeuring van admin.';
-      document.getElementById('reg-name').value='';
-      document.getElementById('reg-user').value='';
-      document.getElementById('reg-pwd').value='';
+      err.style.color='#34d399';err.textContent='Geregistreerd! Wacht op goedkeuring.';
     }).catch(function(){err.textContent='Verbindingsfout';});
 }
 
+function autoSync(){if(_syncTimer)clearTimeout(_syncTimer);_syncTimer=setTimeout(syncToCloud,1500);}
+function syncToCloud(){
+  if(!CURRENT_USER||!CURRENT_TOKEN)return;
+  var data={invoices:DB.get('invoices'),exp_personal:DB.get('exp_personal'),exp_business:DB.get('exp_business'),customers:DB.get('customers')};
+  fetch(ZZP_API,{method:'POST',headers:{'Content-Type':'application/json','X-Username':CURRENT_USER,'X-Token':CURRENT_TOKEN},body:JSON.stringify(data)})
+    .then(function(){updateSyncStatus('Opgeslagen ✓');}).catch(function(){updateSyncStatus('Sync mislukt');});
+}
 function loadFromCloud(){
-  if(!CURRENT_USER||!CURRENT_TOKEN){checkAutoStatus();showTab('dashboard');return;}
+  if(!CURRENT_USER||!CURRENT_TOKEN){checkOverduePrompt();showTab('dashboard');return;}
   updateSyncStatus('Laden...');
   fetch(ZZP_API,{headers:{'X-Username':CURRENT_USER,'X-Token':CURRENT_TOKEN}})
     .then(function(r){return r.json();})
@@ -251,531 +199,270 @@ function loadFromCloud(){
         if(data.exp_business)localStorage.setItem('zzpm_exp_business',JSON.stringify(data.exp_business));
         if(data.customers)localStorage.setItem('zzpm_customers',JSON.stringify(data.customers));
       }
-      checkAutoStatus();showTab('dashboard');
-      updateSyncStatus('Geladen ✓');
-    }).catch(function(){checkAutoStatus();showTab('dashboard');updateSyncStatus('Offline');});
+      updateSyncStatus('Geladen ✓');checkOverduePrompt();showTab('dashboard');
+    }).catch(function(){updateSyncStatus('Offline');checkOverduePrompt();showTab('dashboard');});
 }
 
-function syncToCloud(){
-  if(!CURRENT_USER||!CURRENT_TOKEN)return;
-  var data={
-    invoices:DB.get('invoices'),
-    exp_personal:DB.get('exp_personal'),
-    exp_business:DB.get('exp_business'),
-    customers:DB.get('customers')
-  };
-  fetch(ZZP_API,{method:'POST',headers:{'Content-Type':'application/json','X-Username':CURRENT_USER,'X-Token':CURRENT_TOKEN},body:JSON.stringify(data)})
-    .then(function(){updateSyncStatus('Opgeslagen ✓');})
-    .catch(function(){updateSyncStatus('Sync mislukt');});
+function checkOverduePrompt(){
+  var inv=DB.get('invoices'),td=today();
+  var overdue=inv.filter(function(i){return i.status==='Openstaand'&&i.dueDate&&i.dueDate<td;});
+  if(overdue.length)showOverduePrompt(overdue,0);
 }
-
-// --- DB ---
-var DB={
-  get:function(k){try{return JSON.parse(localStorage.getItem('zzpm_'+k)||'[]');}catch(e){return[];}},
-  set:function(k,v){localStorage.setItem('zzpm_'+k,JSON.stringify(v));autoSync();},
-  getObj:function(k,def){try{return JSON.parse(localStorage.getItem('zzpm_'+k)||JSON.stringify(def));}catch(e){return def;}},
-  setObj:function(k,v){localStorage.setItem('zzpm_'+k,JSON.stringify(v));autoSync();}
-};
-
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-function pa(s){return parseFloat(String(s).replace(',','.'))||0;}
-function fmtEUR(n){return'€ '+pa(n).toFixed(2).replace('.',',');}
-function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function addDays(ds,n){var d=new Date(ds);d.setDate(d.getDate()+n);return d.toFullYear?d.toFullYear():d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function fmtDate(ds){if(!ds)return'';var p=ds.split('-');return p[2]+'-'+p[1]+'-'+p[0];}
-
-// Fix addDays
-function addDays(ds,n){var d=new Date(ds+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-
-var INV_STATUSES=['Beklemende','Betaald','Gecikmis','İptal'];
-
-// --- SYNC ---
-var _syncTimer=null;
-function autoSync(){
-  if(_syncTimer)clearTimeout(_syncTimer);
-  _syncTimer=setTimeout(syncToCloud,1500);
-}
-function updateSyncStatus(msg){var el=document.getElementById('sync-status');if(el)el.textContent=msg;}
-
-// --- AUTO STATUS ---
-function checkAutoStatus(){
-  var inv=DB.get('invoices');
-  var td=today();
-  var changed=false;
-  inv=inv.map(function(i){
-    if(i.status==='Beklemende'&&i.dueDate&&i.dueDate<td){
-      i.status='Gecikmis';changed=true;
-    }
-    return i;
+function showOverduePrompt(overdue,idx){
+  if(idx>=overdue.length)return;
+  var i=overdue[idx];
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var box=document.createElement('div');
+  box.style.cssText='background:var(--navy);border:1px solid var(--border2);border-radius:18px;padding:24px;max-width:320px;width:100%;text-align:center;';
+  box.innerHTML='<div style="font-size:28px;margin-bottom:8px">💰</div><div style="font-size:15px;font-weight:800;margin-bottom:6px">Betaald?</div>'
+    +'<div style="font-size:13px;color:var(--muted2);margin-bottom:4px">'+i.client+'</div>'
+    +'<div style="font-size:22px;font-weight:800;color:var(--warn);margin-bottom:4px">'+fmtEUR(i.amount)+'</div>'
+    +'<div style="font-size:11px;color:var(--muted2);margin-bottom:20px">Vervaldatum: '+fmtDate(i.dueDate)+'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      +'<button id="op-no" style="background:var(--navy2);border:1px solid var(--border2);color:var(--muted);border-radius:10px;padding:13px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">Nog niet</button>'
+      +'<button id="op-yes" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:var(--success);border-radius:10px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">Betaald ✓</button>'
+    +'</div>'+(overdue.length>1?'<div style="font-size:10px;color:var(--muted2);margin-top:12px">'+(idx+1)+' / '+overdue.length+'</div>':'');
+  ov.appendChild(box);document.body.appendChild(ov);
+  document.getElementById('op-yes').addEventListener('click',function(){
+    var inv=DB.get('invoices');inv=inv.map(function(x){return x.id===i.id?Object.assign({},x,{status:'Betaald'}):x;});
+    DB.set('invoices',inv);ov.remove();if(currentTab==='dashboard')renderDashboard();showOverduePrompt(overdue,idx+1);
   });
-  if(changed)localStorage.setItem('zzpm_invoices',JSON.stringify(inv));
+  document.getElementById('op-no').addEventListener('click',function(){ov.remove();showOverduePrompt(overdue,idx+1);});
 }
 
-// --- NAVIGATION ---
-var currentTab='dashboard';
 function showTab(tab){
   currentTab=tab;
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab);});
   document.getElementById('content').scrollTop=0;
-  if(tab==='dashboard')renderDashboard();
-  else if(tab==='invoices')renderInvoices();
-  else if(tab==='expenses')renderExpenses();
-  else if(tab==='calendar')renderCalendar();
+  if(tab==='dashboard')renderDashboard();else if(tab==='invoices')renderInvoices();
+  else if(tab==='expenses')renderExpenses();else if(tab==='calendar')renderCalendar();
   else if(tab==='settings')renderSettings();
 }
-
 function openFab(){
-  if(currentTab==='invoices')openInvoiceForm(null);
-  else if(currentTab==='expenses')openExpenseForm(null);
-  else if(currentTab==='settings')openKlantForm();
-  else openInvoiceForm(null);
+  if(currentTab==='invoices')openInvoiceForm(null);else if(currentTab==='expenses')openExpenseForm(null);
+  else if(currentTab==='settings')openKlantForm();else openInvoiceForm(null);
 }
-
-// --- CUSTOM CONFIRM ---
 function customConfirm(msg,onYes){
   var ov=document.createElement('div');ov.className='confirm-overlay';
   var box=document.createElement('div');box.className='confirm-box';
   var m=document.createElement('div');m.className='confirm-msg';m.textContent=msg;
   var btns=document.createElement('div');btns.className='confirm-btns';
-  var no=document.createElement('button');no.className='confirm-no';no.textContent='Annuleren';
-  no.addEventListener('click',function(){ov.remove();});
-  var yes=document.createElement('button');yes.className='confirm-yes';yes.textContent='Verwijderen';
-  yes.addEventListener('click',function(){ov.remove();onYes();});
-  btns.appendChild(no);btns.appendChild(yes);
-  box.appendChild(m);box.appendChild(btns);ov.appendChild(box);document.body.appendChild(ov);
+  var no=document.createElement('button');no.className='confirm-no';no.textContent='Annuleren';no.addEventListener('click',function(){ov.remove();});
+  var yes=document.createElement('button');yes.className='confirm-yes';yes.textContent='Verwijderen';yes.addEventListener('click',function(){ov.remove();onYes();});
+  btns.appendChild(no);btns.appendChild(yes);box.appendChild(m);box.appendChild(btns);ov.appendChild(box);document.body.appendChild(ov);
 }
 
-// --- SHEET ---
-function openSheet(html){
-  var ov=document.createElement('div');ov.className='sheet-overlay';
-  var sh=document.createElement('div');sh.className='sheet';
-  sh.innerHTML='<div class="sheet-handle"></div>'+html;
-  sh.addEventListener('click',function(e){e.stopPropagation();});
-  ov.addEventListener('click',function(){ov.remove();});
-  ov.appendChild(sh);document.body.appendChild(ov);
-}
-function closeSheet(){var o=document.querySelector('.sheet-overlay');if(o)o.remove();}
-
-// ==================== DASHBOARD ====================
 function renderDashboard(){
-  var inv=DB.get('invoices');
-  var expP=DB.get('exp_personal');
-  var expB=DB.get('exp_business');
+  var inv=DB.get('invoices'),expP=DB.get('exp_personal'),expB=DB.get('exp_business');
   var paid=inv.filter(function(i){return i.status==='Betaald';}).reduce(function(s,i){return s+pa(i.amount);},0);
-  var pend=inv.filter(function(i){return i.status==='Beklemende';}).reduce(function(s,i){return s+pa(i.amount);},0);
-  var late=inv.filter(function(i){return i.status==='Gecikmis';}).reduce(function(s,i){return s+pa(i.amount);},0);
+  var pend=inv.filter(function(i){return i.status==='Openstaand';}).reduce(function(s,i){return s+pa(i.amount);},0);
   var totalExp=[].concat(expP,expB).reduce(function(s,e){return s+pa(e.amount);},0);
-  var res=paid*0.30;
-  var net=paid-totalExp-res;
-  var nc=net>=0?'var(--success)':'var(--danger)';
-
-  // Recent invoices
+  var res=paid*0.30,net=paid-totalExp-res,nc=net>=0?'var(--success)':'var(--danger)';
+  var totalUren=inv.reduce(function(s,i){return s+(parseFloat(i.uren)||0);},0);
+  var notReserved=inv.filter(function(i){return i.status==='Betaald'&&!i.reserved30;});
+  var warnHtml='';
+  if(notReserved.length){
+    var warnRows=notReserved.map(function(i){return'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(245,158,11,.15)"><span style="font-size:12px;font-weight:700">'+i.client+'</span><span style="font-size:12px;color:#f59e0b;font-weight:700">'+fmtEUR(pa(i.amount)*0.3)+' niet gereserveerd</span></div>';}).join('');
+    warnHtml='<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px;margin-bottom:12px"><div style="font-size:13px;font-weight:800;color:#f59e0b;margin-bottom:8px">30% Niet gereserveerd</div>'+warnRows+'<div style="font-size:11px;color:#b45309;margin-top:8px;text-align:right">Totaal: '+fmtEUR(notReserved.reduce(function(s,i){return s+pa(i.amount)*0.3;},0))+'</div></div>';
+  }
   var recent=inv.slice().sort(function(a,b){return b.date>a.date?1:-1;}).slice(0,5);
   var rRows=recent.length?recent.map(function(i){
-    var sc='status-'+i.status.toLowerCase().replace('İ','i').replace('ı','i');
-    return'<div class="row" onclick="editInvoice(\''+i.id+'\')" style="cursor:pointer">'
-      +'<div class="row-main"><div class="row-name">'+i.client+'</div><div class="row-sub">'+fmtDate(i.date)+'</div></div>'
-      +'<span class="row-status '+sc+'">'+i.status+'</span>'
-      +'<div class="row-amount" style="color:'+(i.status==='Betaald'?'var(--success)':i.status==='Gecikmis'?'var(--danger)':'var(--warn)')+'">'+fmtEUR(i.amount)+'</div>'
-      +'</div>';
+    var sc=statusClass(i.status);
+    var amtColor=i.status==='Betaald'?'var(--success)':i.status==='Te laat'?'var(--danger)':'var(--warn)';
+    return'<div class="row" style="cursor:pointer" data-id="'+i.id+'"><div class="row-main"><div class="row-name">'+i.client+'</div><div class="row-sub">'+fmtDate(i.date)+'</div></div><span class="row-status '+sc+'">'+i.status+'</span><div class="row-amount" style="color:'+amtColor+'">'+fmtEUR(i.amount)+'</div></div>';
   }).join(''):'<div style="text-align:center;padding:16px;color:var(--muted2);font-size:13px;">Geen facturen</div>';
 
   document.getElementById('content').innerHTML=
-    '<div class="page">'
-    +'<div class="page-title">Dashboard</div>'
-  var totalUren=inv.reduce(function(s,i){return s+(i.uren||0);},0);
-
-    +'<div class="stat-grid">'
-      +'<div class="stat"><div class="stat-label">Ontvangen</div><div class="stat-val" style="color:var(--success)">'+fmtEUR(paid)+'</div></div>'
-      +'<div class="stat"><div class="stat-label">Openstaand</div><div class="stat-val" style="color:var(--warn)">'+fmtEUR(pend)+'</div></div>'
-      +'<div class="stat"><div class="stat-label">Te laat</div><div class="stat-val" style="color:var(--danger)">'+fmtEUR(late)+'</div></div>'
-      +'<div class="stat"><div class="stat-label">Uitgaven</div><div class="stat-val" style="color:var(--muted)">'+fmtEUR(totalExp)+'</div></div>'
-      +'<div class="stat"><div class="stat-label">Totaal uren</div><div class="stat-val" style="color:var(--accent);font-size:18px">'+totalUren.toFixed(1)+' u</div></div>'
-    +'</div>'
-    +'<div class="stat-grid">'
-      +'<div class="stat" style="border-color:#4fc3f744"><div class="stat-label">30% Reservering</div><div class="stat-val" style="color:var(--accent);font-size:18px">'+fmtEUR(res)+'</div></div>'
-      +'<div class="stat"><div class="stat-label">Netto winst</div><div class="stat-val" style="color:'+nc+';font-size:18px">'+fmtEUR(net)+'</div></div>'
-    +'</div>'
-    +'<div class="card"><div class="card-title">Recente facturen</div>'+rRows+'</div>'
-    +'</div>';
+    '<div class="page"><div class="page-title">Dashboard</div>'+warnHtml
+    +'<div class="stat-grid"><div class="stat"><div class="stat-label">Ontvangen</div><div class="stat-val" style="color:var(--success)">'+fmtEUR(paid)+'</div></div><div class="stat"><div class="stat-label">Openstaand</div><div class="stat-val" style="color:var(--warn)">'+fmtEUR(pend)+'</div></div></div>'
+    +'<div class="stat-grid"><div class="stat"><div class="stat-label">Uitgaven</div><div class="stat-val" style="color:var(--muted)">'+fmtEUR(totalExp)+'</div></div><div class="stat"><div class="stat-label">Netto winst</div><div class="stat-val" style="color:'+nc+'">'+fmtEUR(net)+'</div></div></div>'
+    +'<div class="stat-grid"><div class="stat" style="border-color:#4fc3f744"><div class="stat-label">30% Reservering</div><div class="stat-val" style="color:var(--accent)">'+fmtEUR(res)+'</div></div><div class="stat"><div class="stat-label">Totaal uren</div><div class="stat-val" style="color:var(--accent)">'+totalUren.toFixed(1)+' u</div></div></div>'
+    +'<div class="card"><div class="card-title">Recente facturen</div>'+rRows+'</div></div>';
+  document.querySelectorAll('.row[data-id]').forEach(function(row){row.addEventListener('click',function(){editInvoice(this.dataset.id);});});
 }
 
-// ==================== INVOICES ====================
-var invSort='date';
 function renderInvoices(){
-  var inv=DB.get('invoices');
-  inv=inv.slice().sort(function(a,b){
-    if(invSort==='date')return b.date>a.date?1:-1;
-    if(invSort==='amount')return pa(b.amount)-pa(a.amount);
-    if(invSort==='client')return a.client>b.client?1:-1;
-    return 0;
+  var inv=DB.get('invoices').slice().sort(function(a,b){
+    if(invSort==='date')return b.date>a.date?1:-1;if(invSort==='amount')return pa(b.amount)-pa(a.amount);if(invSort==='client')return a.client>b.client?1:-1;return 0;
   });
   var total=inv.reduce(function(s,i){return s+pa(i.amount);},0);
   var paid=inv.filter(function(i){return i.status==='Betaald';}).reduce(function(s,i){return s+pa(i.amount);},0);
-
   var rows=inv.length?inv.map(function(i){
-    var sc='status-'+i.status.toLowerCase().replace('İ','i').replace('ı','i');
-    return'<div class="row" onclick="editInvoice(\''+i.id+'\')" style="cursor:pointer">'
-      +'<div class="row-main">'
-        +'<div class="row-name">'+i.client+'</div>'
-        +'<div class="row-sub">'+i.invoiceNo+' · '+fmtDate(i.date)+' · Vervalt: '+fmtDate(i.dueDate)+'</div>'
-      +'</div>'
-      +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
-        +'<span class="row-status '+sc+'">'+i.status+'</span>'
-        +'<div class="row-amount" style="font-size:14px;color:'+(i.status==='Betaald'?'var(--success)':i.status==='Gecikmis'?'var(--danger)':'var(--warn)')+'">'+fmtEUR(i.amount)+'</div>'
-      +'</div>'
-      +'</div>';
-  }).join(''):'<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="empty-title">Geen facturen</div><div style="font-size:12px">Voeg je eerste factuur toe</div></div>';
-
-  document.getElementById('content').innerHTML=
-    '<div class="page">'
-    +'<div class="page-title">Facturen</div>'
-    +'<div class="stat-grid" style="margin-bottom:12px">'
-      +'<div class="stat"><div class="stat-label">Totaal</div><div class="stat-val" style="font-size:16px">'+fmtEUR(total)+'</div></div>'
-      +'<div class="stat"><div class="stat-label">Ontvangen</div><div class="stat-val" style="font-size:16px;color:var(--success)">'+fmtEUR(paid)+'</div></div>'
-    +'</div>'
-    +'<div style="display:flex;gap:6px;margin-bottom:12px">'
-      +['date','amount','client'].map(function(s){return'<button onclick="invSort=\''+s+'\';renderInvoices()" style="background:'+(invSort===s?'var(--blue)':'var(--navy2)')+';border:none;color:'+(invSort===s?'#fff':'var(--muted)')+';border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">'+{date:'Datum',amount:'Bedrag',client:'Klant'}[s]+'</button>';}).join('')
-    +'</div>'
-    +'<div class="card" style="padding:8px 12px">'+rows+'</div>'
-    +'</div>';
+    var sc=statusClass(i.status);var amtColor=i.status==='Betaald'?'var(--success)':i.status==='Te laat'?'var(--danger)':'var(--warn)';
+    return'<div class="row" style="cursor:pointer" data-id="'+i.id+'"><div class="row-main"><div class="row-name">'+i.client+'</div><div class="row-sub">'+i.invoiceNo+' · '+fmtDate(i.date)+'</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="row-status '+sc+'">'+i.status+'</span><div class="row-amount" style="font-size:13px;color:'+amtColor+'">'+fmtEUR(i.amount)+'</div></div></div>';
+  }).join(''):'<div class="empty-state"><div style="font-size:13px">Geen facturen</div></div>';
+  document.getElementById('content').innerHTML='<div class="page"><div class="page-title">Facturen</div>'
+    +'<div class="stat-grid" style="margin-bottom:12px"><div class="stat"><div class="stat-label">Totaal</div><div class="stat-val" style="font-size:16px">'+fmtEUR(total)+'</div></div><div class="stat"><div class="stat-label">Ontvangen</div><div class="stat-val" style="font-size:16px;color:var(--success)">'+fmtEUR(paid)+'</div></div></div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:12px" id="sort-btns"></div>'
+    +'<div class="card" style="padding:8px 12px">'+rows+'</div></div>';
+  var sb=document.getElementById('sort-btns');
+  ['date','amount','client'].forEach(function(s){var b=document.createElement('button');b.dataset.sort=s;b.textContent={date:'Datum',amount:'Bedrag',client:'Klant'}[s];b.style.cssText='background:'+(invSort===s?'var(--blue)':'var(--navy2)')+';border:none;color:'+(invSort===s?'#fff':'var(--muted)')+';border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer';b.addEventListener('click',function(){invSort=this.dataset.sort;renderInvoices();});sb.appendChild(b);});
+  document.querySelectorAll('.row[data-id]').forEach(function(row){row.addEventListener('click',function(){editInvoice(this.dataset.id);});});
 }
 
-function sortInv(inv){return inv.slice().sort(function(a,b){return b.invoiceNo>a.invoiceNo?1:-1;});}
-
-function getNextInvoiceNo(){
-  var inv=DB.get('invoices');
-  if(!inv.length){
-    var y=new Date().getFullYear().toString().slice(-2);
-    return y+'26001';
-  }
-  var nums=inv.map(function(i){return parseInt(i.invoiceNo)||0;}).filter(Boolean);
-  var max=Math.max.apply(null,nums);
-  return String(max+1);
-}
+function getNextInvoiceNo(){var inv=DB.get('invoices');if(!inv.length){var y=new Date().getFullYear().toString().slice(-2);return y+'26001';}var nums=inv.map(function(i){return parseInt(i.invoiceNo)||0;}).filter(Boolean);return String(Math.max.apply(null,nums)+1);}
 
 function openInvoiceForm(inv){
   var isEdit=!!inv;
-  var d=inv||{client:'',invoiceNo:getNextInvoiceNo(),date:today(),dueDate:addDays(today(),30),status:'Beklemende',amount:''};
+  var d=inv||{client:'',invoiceNo:getNextInvoiceNo(),date:today(),dueDate:addDays(today(),30),status:'Openstaand',amount:'',uren:'',tarief:'',reserved30:false};
   var klanten=DB.get('customers');
-  var klantOpts=klanten.map(function(c){return'<option value="'+c.name+'"'+(c.name===d.client?' selected':'')+'>'+c.name+'</option>';}).join('');
-  var statusOpts=INV_STATUSES.map(function(s){return'<option'+(s===d.status?' selected':'')+'>'+s+'</option>';}).join('');
   var amtVal=d.amount?String(pa(d.amount).toFixed(2)).replace('.',','):'';
-
-  openSheet(
-    '<div class="sheet-header"><div class="sheet-title">'+(isEdit?'Factuur bewerken':'Nieuwe factuur')+'</div><button class="sheet-close" onclick="closeSheet()">Sluiten</button></div>'
-    +(klanten.length?'<label class="fl">Klant selecteren</label><select id="f-klant-sel" class="form-input" onchange="document.getElementById(\'f-client\').value=this.value"><option value="">-- Selecteer --</option>'+klantOpts+'</select>':'')
-    +'<label class="fl">Klantnaam</label><input id="f-client" class="form-input" value="'+d.client+'" placeholder="Naam klant..."/>'
-    +'<label class="fl">Totaal bedrag (EUR)</label><input type="text" inputmode="decimal" id="f-amount" class="form-input amount-input" value="'+amtVal+'" placeholder="0,00"/>'
-    +'<div class="grid2">'
-      +'<div><label class="fl">Factuurnummer</label><input id="f-no" class="form-input" value="'+d.invoiceNo+'"/></div>'
-      +'<div><label class="fl">Status</label><select id="f-status" class="form-input">'+statusOpts+'</select></div>'
-    +'</div>'
-    +'<div class="grid2">'
-      +'<div><label class="fl">Factuurdatum</label><input type="date" id="f-date" class="form-input" value="'+d.date+'"/></div>'
-      +'<label class="fl">Vervaldatum</label>'    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'    +'<button onclick="setDueDays(7)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+7d</button>'    +'<button onclick="setDueDays(14)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+14d</button>'    +'<button onclick="setDueDays(21)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+21d</button>'    +'<button onclick="setDueDays(28)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+28d</button>'    +'<button onclick="setDueDays(30)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+30d</button>'    +'<button onclick="setDueDays(35)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+35d</button>'    +'</div>'    +'<input type="date" id="f-due" class="form-input" value="'+d.dueDate+'"/>'
-    +'<button class="btn-primary" onclick="saveInvoice(\''+( isEdit?d.id:'')+'\')">Opslaan</button>'
-    +(isEdit?'<button class="btn-danger" onclick="deleteInvoice(\''+d.id+'\')">Verwijderen</button>':'')
-    +'<button class="btn-secondary" onclick="closeSheet()">Annuleren</button>'
-  );
-  setTimeout(function(){var e=document.getElementById('f-client');if(e&&!d.client)e.focus();},150);
+  var ov=document.createElement('div');ov.className='sheet-overlay';
+  var sh=document.createElement('div');sh.className='sheet';
+  sh.addEventListener('click',function(e){e.stopPropagation();});
+  ov.addEventListener('click',function(){ov.remove();});
+  var html='<div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">'+(isEdit?'Factuur bewerken':'Nieuwe factuur')+'</div><button class="sheet-close" id="sh-close">Sluiten</button></div>';
+  if(klanten.length){html+='<label class="fl">Klant selecteren</label><select id="f-klant-sel" class="form-input"><option value="">-- Selecteer --</option>';klanten.forEach(function(c){html+='<option value="'+c.name+'"'+(c.name===d.client?' selected':'')+'>'+c.name+'</option>';});html+='</select>';}
+  html+='<label class="fl">Klantnaam</label><input id="f-client" class="form-input" value="'+d.client+'" placeholder="Naam klant..."/>';
+  html+='<div class="grid2"><div><label class="fl">Uren</label><input type="text" inputmode="decimal" id="f-uren" class="form-input" value="'+(d.uren||'')+'" placeholder="0"/></div><div><label class="fl">Uurtarief (€)</label><input type="text" inputmode="decimal" id="f-tarief" class="form-input" value="'+(d.tarief||'')+'" placeholder="0,00"/></div></div>';
+  html+='<label class="fl">Totaal bedrag (EUR)</label><input type="text" inputmode="decimal" id="f-amount" class="form-input amount-input" value="'+amtVal+'" placeholder="0,00"/>';
+  html+='<div class="grid2"><div><label class="fl">Factuurnummer</label><input id="f-no" class="form-input" value="'+d.invoiceNo+'"/></div><div><label class="fl">Status</label><select id="f-status" class="form-input">';
+  INV_STATUSES.forEach(function(s){html+='<option'+(s===d.status?' selected':'')+'>'+s+'</option>';});
+  html+='</select></div></div>';
+  html+='<label class="fl">Factuurdatum</label><input type="date" id="f-date" class="form-input" value="'+d.date+'" style="max-width:180px;"/>';
+  html+='<label class="fl">Vervaldatum</label>';
+  html+='<div style="display:flex;gap:8px;align-items:stretch">';
+  html+='<input type="date" id="f-due" class="form-input" value="'+d.dueDate+'" style="max-width:160px;flex-shrink:0;"/>';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;flex:1" id="due-btns"></div>';
+  html+='</div>';
+  html+='<div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:12px;margin-top:12px;display:flex;align-items:center;gap:10px"><input type="checkbox" id="f-res30" style="width:18px;height:18px;cursor:pointer"'+(d.reserved30?' checked':'')+'/><label for="f-res30" style="font-size:13px;font-weight:700;color:var(--success);cursor:pointer">30% gereserveerd</label></div>';
+  html+='<button id="sh-save" class="btn-primary">Opslaan</button>';
+  if(isEdit)html+='<button id="sh-del" class="btn-danger">Verwijderen</button>';
+  html+='<button id="sh-cancel" class="btn-secondary">Annuleren</button>';
+  sh.innerHTML=html;ov.appendChild(sh);document.body.appendChild(ov);
+  document.getElementById('sh-close').addEventListener('click',function(){ov.remove();});
+  document.getElementById('sh-cancel').addEventListener('click',function(){ov.remove();});
+  document.getElementById('sh-save').addEventListener('click',function(){saveInvoice(isEdit?d.id:'',ov);});
+  if(isEdit)document.getElementById('sh-del').addEventListener('click',function(){ov.remove();deleteInvoice(d.id);});
+  var fkl=document.getElementById('f-klant-sel');if(fkl)fkl.addEventListener('change',function(){document.getElementById('f-client').value=this.value;});
+  function calcAmt(){var u=pa(document.getElementById('f-uren').value),t=pa(document.getElementById('f-tarief').value);if(u&&t)document.getElementById('f-amount').value=(u*t).toFixed(2).replace('.',',');}
+  document.getElementById('f-uren').addEventListener('input',calcAmt);document.getElementById('f-tarief').addEventListener('input',calcAmt);
+  var db=document.getElementById('due-btns');
+  [7,14,21,28,30,35].forEach(function(n){var b=document.createElement('button');b.textContent='+'+n+'d';b.style.cssText='background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer';b.addEventListener('click',function(){var base=document.getElementById('f-date').value||today();document.getElementById('f-due').value=addDays(base,n);});db.appendChild(b);});
 }
-
-function calcInvAmount(){
-  var uren=pa((document.getElementById('f-uren')||{}).value);
-  var tarief=pa((document.getElementById('f-tarief')||{}).value);
-  if(uren&&tarief){
-    var total=(uren*tarief).toFixed(2).replace('.',',');
-    var el=document.getElementById('f-amount');
-    if(el)el.value=total;
-  }
-}
-function setDueDays(n){
-  var dateEl=document.getElementById('f-date');
-  var dueEl=document.getElementById('f-due');
-  if(!dateEl||!dueEl)return;
-  var base=dateEl.value||today();
-  dueEl.value=addDays(base,n);
-}
-function updateDueDate(){
-  // When date changes, recalc due based on current due offset
-  var dateEl=document.getElementById('f-date');
-  if(!dateEl)return;
-  // Just leave due as is, user can click +Xd buttons
-}
-function saveInvoice(id){
+function saveInvoice(id,ov){
   var client=(document.getElementById('f-client')||{}).value.trim();
   var amount=pa((document.getElementById('f-amount')||{}).value);
   if(!client)return;
-  if(!amount&&!id)return;
-  var inv=DB.get('invoices');
   var uren=pa((document.getElementById('f-uren')||{}).value)||0;
   var tarief=pa((document.getElementById('f-tarief')||{}).value)||0;
-  var item={
-    id:id||uid(),
-    client:client,
-    invoiceNo:(document.getElementById('f-no')||{}).value.trim(),
-    date:(document.getElementById('f-date')||{}).value||today(),
-    dueDate:(document.getElementById('f-due')||{}).value||addDays(today(),30),
-    status:(document.getElementById('f-status')||{}).value||'Beklemende',
-    amount:amount,
-    uren:uren||undefined,
-    tarief:tarief||undefined
-  };
-  if(id){inv=inv.map(function(i){return i.id===id?item:i;});}
-  else{inv.push(item);}
-  // Save to customers if new client
-  var klanten=DB.get('customers');
-  if(!klanten.some(function(c){return c.name===client;})){
-    klanten.push({id:uid(),name:client});
-    localStorage.setItem('zzpm_customers',JSON.stringify(klanten));
-  }
-  DB.set('invoices',inv);
-  closeSheet();
-  renderInvoices();
+  var res30El=document.getElementById('f-res30');
+  var item={id:id||uid(),client:client,invoiceNo:(document.getElementById('f-no')||{}).value.trim(),date:(document.getElementById('f-date')||{}).value||today(),dueDate:(document.getElementById('f-due')||{}).value||addDays(today(),30),status:(document.getElementById('f-status')||{}).value||'Openstaand',amount:amount,uren:uren||undefined,tarief:tarief||undefined,reserved30:res30El?res30El.checked:false};
+  var inv=DB.get('invoices');if(id){inv=inv.map(function(i){return i.id===id?item:i;});}else{inv.push(item);}
+  var klanten=DB.get('customers');if(!klanten.some(function(c){return c.name===client;})){klanten.push({id:uid(),name:client});localStorage.setItem('zzpm_customers',JSON.stringify(klanten));}
+  DB.set('invoices',inv);if(ov)ov.remove();
+  if(currentTab==='invoices')renderInvoices();else renderDashboard();
 }
-
-function editInvoice(id){
-  var i=DB.get('invoices').filter(function(x){return x.id===id;})[0];
-  if(i)openInvoiceForm(i);
-}
-
-function deleteInvoice(id){
-  closeSheet();
-  customConfirm('Factuur verwijderen?',function(){
-    DB.set('invoices',DB.get('invoices').filter(function(i){return i.id!==id;}));
-    renderInvoices();
-  });
-}
-
-// ==================== EXPENSES ====================
-var expTab='personal';
-function setExpTab(tab){
-  expTab=tab;
-  document.querySelectorAll('.subtab').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab);});
-  renderExpenseList();
-}
+function editInvoice(id){var i=DB.get('invoices').filter(function(x){return x.id===id;})[0];if(i)openInvoiceForm(i);}
+function deleteInvoice(id){customConfirm('Factuur verwijderen?',function(){DB.set('invoices',DB.get('invoices').filter(function(i){return i.id!==id;}));if(currentTab==='invoices')renderInvoices();else renderDashboard();});}
 
 function renderExpenses(){
-  var expP=DB.get('exp_personal');
-  var expB=DB.get('exp_business');
-  var totalP=expP.reduce(function(s,e){return s+pa(e.amount);},0);
-  var totalB=expB.reduce(function(s,e){return s+pa(e.amount);},0);
-
-  document.getElementById('content').innerHTML=
-    '<div class="page">'
-    +'<div class="page-title">Uitgaven</div>'
-    +'<div class="stat-grid" style="margin-bottom:12px">'
-      +'<div class="stat"><div class="stat-label">Privé</div><div class="stat-val" style="font-size:16px;color:var(--danger)">'+fmtEUR(totalP)+'</div></div>'
-      +'<div class="stat"><div class="stat-label">Zakelijk</div><div class="stat-val" style="font-size:16px;color:var(--warn)">'+fmtEUR(totalB)+'</div></div>'
-    +'</div>'
-    +'<div class="subtab-row">'
-      +'<button class="subtab'+(expTab==='personal'?' active':'')+'" data-tab="personal" onclick="setExpTab(\'personal\')">Privé</button>'
-      +'<button class="subtab'+(expTab==='business'?' active':'')+'" data-tab="business" onclick="setExpTab(\'business\')">Zakelijk</button>'
-    +'</div>'
-    +'<div id="exp-list"></div>'
-    +'</div>';
+  var expP=DB.get('exp_personal'),expB=DB.get('exp_business');
+  var totalP=expP.reduce(function(s,e){return s+pa(e.amount);},0),totalB=expB.reduce(function(s,e){return s+pa(e.amount);},0);
+  document.getElementById('content').innerHTML='<div class="page"><div class="page-title">Uitgaven</div>'
+    +'<div class="stat-grid" style="margin-bottom:12px"><div class="stat"><div class="stat-label">Privé</div><div class="stat-val" style="font-size:16px;color:var(--danger)">'+fmtEUR(totalP)+'</div></div><div class="stat"><div class="stat-label">Zakelijk</div><div class="stat-val" style="font-size:16px;color:var(--warn)">'+fmtEUR(totalB)+'</div></div></div>'
+    +'<div class="subtab-row"><button class="subtab'+(expTab==='personal'?' active':'')+'" data-tab="personal">Privé</button><button class="subtab'+(expTab==='business'?' active':'')+'" data-tab="business">Zakelijk</button></div>'
+    +'<div id="exp-list"></div></div>';
+  document.querySelectorAll('.subtab').forEach(function(btn){btn.addEventListener('click',function(){expTab=this.dataset.tab;document.querySelectorAll('.subtab').forEach(function(b){b.classList.remove('active');});this.classList.add('active');renderExpenseList();});});
   renderExpenseList();
 }
-
 function renderExpenseList(){
   var key=expTab==='personal'?'exp_personal':'exp_business';
   var exp=DB.get(key).slice().sort(function(a,b){return b.date>a.date?1:-1;});
   var el=document.getElementById('exp-list');if(!el)return;
-  if(!exp.length){el.innerHTML='<div class="empty-state" style="padding:30px"><div style="font-size:13px;color:var(--muted2)">Geen uitgaven</div></div>';return;}
-  el.innerHTML='<div class="card" style="padding:8px 12px">'+exp.map(function(e){
-    return'<div class="row" onclick="editExpense(\''+e.id+'\',\''+expTab+'\')" style="cursor:pointer">'
-      +'<div class="row-main"><div class="row-name">'+e.desc+'</div><div class="row-sub">'+fmtDate(e.date)+(e.cat?' · '+e.cat:'')+'</div></div>'
-      +'<div class="row-amount" style="color:var(--danger)">'+fmtEUR(e.amount)+'</div>'
-      +'</div>';
-  }).join('')+'</div>';
+  if(!exp.length){el.innerHTML='<div class="empty-state"><div style="font-size:13px;color:var(--muted2)">Geen uitgaven</div></div>';return;}
+  el.innerHTML='<div class="card" style="padding:8px 12px">'+exp.map(function(e){return'<div class="row" style="cursor:pointer" data-id="'+e.id+'"><div class="row-main"><div class="row-name">'+e.desc+'</div><div class="row-sub">'+fmtDate(e.date)+(e.cat?' · '+e.cat:'')+(e.btw&&e.btw!=='0%'?' · BTW '+e.btw:'')+'</div></div><div class="row-amount" style="color:var(--danger)">'+fmtEUR(e.amount)+'</div></div>';}).join('')+'</div>';
+  document.querySelectorAll('#exp-list .row[data-id]').forEach(function(row){row.addEventListener('click',function(){editExpense(this.dataset.id,expTab);});});
 }
-
 function openExpenseForm(exp,type){
-  var tab=type||expTab;
-  var isEdit=!!exp;
-  var d=exp||{desc:'',amount:'',date:today(),cat:''};
-  var zakCats=['Gereedschap / Materiaal','Auto & Reiskosten','Telefoon & Internet','Software & Abonnementen','Verzekeringen','Opleiding & Cursussen','Marketing & Reclame','Kantoorbenodigdheden','Representatie','Administratie & Boekhouding','Overig zakelijk'];
-  var privCats=['Boodschappen','Huur & Energie','Zorgkosten','Transport','Kleding','Horeca','Overig privé'];
-  var cats=tab==='business'?zakCats:privCats;
-  var catOpts='<option value="">-- Selecteer categorie --</option>'+cats.map(function(c){return'<option value="'+c+'"'+(c===(d.cat||'')?'selected':'')+'>'+c+'</option>';}).join('');
-  var btwOpts=['0%','9%','21%'].map(function(b){return'<option'+(b===(d.btw||'0%')?' selected':'')+'>'+b+'</option>';}).join('');
-  openSheet(
-    '<div class="sheet-header"><div class="sheet-title">'+(isEdit?'Uitgave bewerken':'Nieuwe uitgave')+'</div><button class="sheet-close" onclick="closeSheet()">Sluiten</button></div>'
-    +'<div class="subtab-row">'
-      +'<button id="et-p" class="subtab'+(tab==='personal'?' active':'')+'" onclick="document.getElementById(\'et-p\').classList.add(\'active\');document.getElementById(\'et-b\').classList.remove(\'active\');window._etab=\'personal\'">Privé</button>'
-      +'<button id="et-b" class="subtab'+(tab==='business'?' active':'')+'" onclick="document.getElementById(\'et-b\').classList.add(\'active\');document.getElementById(\'et-p\').classList.remove(\'active\');window._etab=\'business\'">Zakelijk</button>'
-    +'</div>'
-    +'<label class="fl">Omschrijving</label><input id="e-desc" class="form-input" value="'+d.desc+'" placeholder="Wat was de uitgave?"/>'
-    +'<label class="fl">Bedrag (EUR)</label><input type="text" inputmode="decimal" id="e-amount" class="form-input amount-input" value="'+(d.amount?String(pa(d.amount).toFixed(2)).replace('.',','):'')+'" placeholder="0,00"/>'
-    +'<div class="grid2">'
-      +'<div><label class="fl">Datum</label><input type="date" id="e-date" class="form-input" value="'+d.date+'"/></div>'
-      +'<label class="fl">Categorie</label><select id="e-cat" class="form-input">'+catOpts+'</select>'
-    +'</div>'
-    +'<button class="btn-primary" onclick="saveExpense(\''+( isEdit?d.id:'')+'\')">Opslaan</button>'
-    +(isEdit?'<button class="btn-danger" onclick="deleteExpense(\''+d.id+'\',\''+tab+'\')">Verwijderen</button>':'')
-    +'<button class="btn-secondary" onclick="closeSheet()">Annuleren</button>'
-  );
+  var tab=type||expTab,isEdit=!!exp;
+  var d=exp||{desc:'',amount:'',date:today(),cat:'',btw:'0%',note:''};
+  var ov=document.createElement('div');ov.className='sheet-overlay';
+  var sh=document.createElement('div');sh.className='sheet';
+  sh.addEventListener('click',function(e){e.stopPropagation();});ov.addEventListener('click',function(){ov.remove();});
+  var html='<div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">'+(isEdit?'Uitgave bewerken':'Nieuwe uitgave')+'</div><button class="sheet-close" id="se-close">Sluiten</button></div>';
+  html+='<div class="subtab-row"><button id="et-p" class="subtab'+(tab==='personal'?' active':'')+'" data-tab="personal">Privé</button><button id="et-b" class="subtab'+(tab==='business'?' active':'')+'" data-tab="business">Zakelijk</button></div>';
+  html+='<label class="fl">Omschrijving</label><input id="e-desc" class="form-input" value="'+d.desc+'" placeholder="Wat was de uitgave?"/>';
+  html+='<label class="fl">Categorie</label><select id="e-cat" class="form-input"><option value="">-- Selecteer categorie --</option>';
+  var initCats=tab==='business'?ZAK_CATS:PRIV_CATS;initCats.forEach(function(c){html+='<option value="'+c+'"'+(c===d.cat?' selected':'')+'>'+c+'</option>';});html+='</select>';
+  html+='<label class="fl">Bedrag (EUR)</label><input type="text" inputmode="decimal" id="e-amount" class="form-input amount-input" value="'+(d.amount?String(pa(d.amount).toFixed(2)).replace('.',','):'')+'" placeholder="0,00"/>';
+  html+='<label class="fl">Datum</label><input type="date" id="e-date" class="form-input" value="'+d.date+'" style="max-width:180px;"/>';
+  html+='<label class="fl">BTW</label><select id="e-btw" class="form-input">';
+  ['0%','9%','21%'].forEach(function(b){html+='<option'+(b===d.btw?' selected':'')+'>'+b+'</option>';});
+  html+='</select>';
+  html+='<label class="fl">Notitie (optioneel)</label><input id="e-note" class="form-input" value="'+(d.note||'')+'" placeholder="Optioneel..."/>';
+  html+='<button id="se-save" class="btn-primary">Opslaan</button>';
+  if(isEdit)html+='<button id="se-del" class="btn-danger">Verwijderen</button>';
+  html+='<button id="se-cancel" class="btn-secondary">Annuleren</button>';
+  sh.innerHTML=html;ov.appendChild(sh);document.body.appendChild(ov);
   window._etab=tab;
-  setTimeout(function(){var e=document.getElementById('e-desc');if(e)e.focus();},150);
-}
+  function updateCats(t){var cats=t==='business'?ZAK_CATS:PRIV_CATS;var sel=document.getElementById('e-cat');sel.innerHTML='<option value="">-- Selecteer categorie --</option>';cats.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;if(c===d.cat)o.selected=true;sel.appendChild(o);});}
+  sh.querySelectorAll('.subtab').forEach(function(btn){btn.addEventListener('click',function(){window._etab=this.dataset.tab;sh.querySelectorAll('.subtab').forEach(function(b){b.classList.remove('active');});this.classList.add('active');updateCats(window._etab);});});
+  document.getElementById('se-close').addEventListener('click',function(){ov.remove();});
+  document.getElementById('se-cancel').addEventListener('click',function(){ov.remove();});
+  document.getElementById('se-save').addEventListener('click',function(){saveExpense(isEdit?d.id:'',ov);});
+  if(isEdit)document.getElementById('se-del').addEventListener('click',function(){ov.remove();deleteExpense(d.id,type);});
 
-function saveExpense(id){
-  var tab=window._etab||expTab;
-  var key=tab==='personal'?'exp_personal':'exp_business';
-  var desc=(document.getElementById('e-desc')||{}).value.trim();
-  var amount=pa((document.getElementById('e-amount')||{}).value);
+}
+function saveExpense(id,ov){
+  var tab=window._etab||expTab,key=tab==='personal'?'exp_personal':'exp_business';
+  var desc=(document.getElementById('e-desc')||{}).value.trim(),amount=pa((document.getElementById('e-amount')||{}).value);
   if(!desc||!amount)return;
-  var exp=DB.get(key);
-  var item={id:id||uid(),desc:desc,amount:amount,date:(document.getElementById('e-date')||{}).value||today(),cat:(document.getElementById('e-cat')||{}).value,btw:(document.getElementById('e-btw')||{}).value||'0%'};
-  if(id){exp=exp.map(function(e){return e.id===id?item:e;});}
-  else{exp.push(item);}
-  DB.set(key,exp);
-  closeSheet();
-  expTab=tab;
-  renderExpenses();
+  var item={id:id||uid(),desc:desc,amount:amount,date:(document.getElementById('e-date')||{}).value||today(),cat:(document.getElementById('e-cat')||{}).value,btw:(document.getElementById('e-btw')||{}).value||'0%',note:(document.getElementById('e-note')||{}).value||''};
+  var exp=DB.get(key);if(id){exp=exp.map(function(e){return e.id===id?item:e;});}else{exp.push(item);}
+  DB.set(key,exp);if(ov)ov.remove();expTab=tab;renderExpenses();
 }
+function editExpense(id,type){var key=type==='personal'?'exp_personal':'exp_business';var e=DB.get(key).filter(function(x){return x.id===id;})[0];if(e)openExpenseForm(e,type);}
+function deleteExpense(id,type){customConfirm('Uitgave verwijderen?',function(){var key=type==='personal'?'exp_personal':'exp_business';DB.set(key,DB.get(key).filter(function(e){return e.id!==id;}));renderExpenses();});}
 
-function editExpense(id,type){
-  var key=type==='personal'?'exp_personal':'exp_business';
-  var e=DB.get(key).filter(function(x){return x.id===id;})[0];
-  if(e)openExpenseForm(e,type);
-}
-
-function deleteExpense(id,type){
-  closeSheet();
-  customConfirm('Uitgave verwijderen?',function(){
-    var key=type==='personal'?'exp_personal':'exp_business';
-    DB.set(key,DB.get(key).filter(function(e){return e.id!==id;}));
-    renderExpenses();
-  });
-}
-
-// ==================== CALENDAR ====================
-function renderCalendar(){
-  var now=new Date();
-  window._cy=window._cy||now.getFullYear();
-  window._cm=window._cm!==undefined?window._cm:now.getMonth();
-  drawCal(window._cy,window._cm);
-}
-
+function renderCalendar(){var now=new Date();window._cy=window._cy||now.getFullYear();window._cm=window._cm!==undefined?window._cm:now.getMonth();drawCal(window._cy,window._cm);}
 function drawCal(y,m){
-  var inv=DB.get('invoices');
-  var expP=DB.get('exp_personal');
-  var expB=DB.get('exp_business');
-  var evts={};
-  inv.forEach(function(i){if(i.dueDate){var k=i.dueDate;if(!evts[k])evts[k]=[];evts[k].push({type:'inv',label:i.client,amt:i.amount,status:i.status});}});
-  [].concat(expP,expB).forEach(function(e){if(e.date){var k=e.date;if(!evts[k])evts[k]=[];evts[k].push({type:'exp',label:e.desc,amt:e.amount});}});
+  var inv=DB.get('invoices'),expP=DB.get('exp_personal'),expB=DB.get('exp_business'),evts={};
+  inv.forEach(function(i){if(i.dueDate){if(!evts[i.dueDate])evts[i.dueDate]=[];evts[i.dueDate].push({type:'inv',label:i.client,amt:i.amount,status:i.status});}});
+  [].concat(expP,expB).forEach(function(e){if(e.date){if(!evts[e.date])evts[e.date]=[];evts[e.date].push({type:'exp',label:e.desc,amt:e.amount});}});
   window._evts=evts;
-
   var MONTHS=['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
   var DAYS=['Ma','Di','Wo','Do','Vr','Za','Zo'];
-  var td=today();
-  var first=new Date(y,m,1);
-  var dow=(first.getDay()+6)%7;
-  var dim=new Date(y,m+1,0).getDate();
-  var off=dow;
-
-  var h='<div class="page">'
-    +'<div class="page-title">Kalender</div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'
-      +'<button onclick="moveCal(-1)" style="background:var(--navy2);border:none;color:var(--text);border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer">‹</button>'
-      +'<div style="font-size:16px;font-weight:800">'+MONTHS[m]+' '+y+'</div>'
-      +'<button onclick="moveCal(1)" style="background:var(--navy2);border:none;color:var(--text);border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer">›</button>'
-    +'</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px">';
+  var td=today(),first=new Date(y,m,1),dow=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate();
+  var h='<div class="page"><div class="page-title">Kalender</div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><button id="cal-prev" style="background:var(--navy2);border:none;color:var(--text);border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer">‹</button><div style="font-size:16px;font-weight:800">'+MONTHS[m]+' '+y+'</div><button id="cal-next" style="background:var(--navy2);border:none;color:var(--text);border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer">›</button></div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">';
   DAYS.forEach(function(d){h+='<div style="text-align:center;font-size:10px;font-weight:700;color:var(--muted2);padding:4px 0">'+d+'</div>';});
   h+='</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px">';
-  for(var i=0;i<off;i++)h+='<div></div>';
-  for(var d2=1;d2<=dim;d2++){
-    var mo=String(m+1).padStart(2,'0');
-    var d2s=String(d2).padStart(2,'0');
-    var ds=y+'-'+mo+'-'+d2s;
-    var ev=evts[ds]||[];
-    var isT=(ds===td);
-    var hasI=ev.some(function(e){return e.type==='inv';});
-    var hasE=ev.some(function(e){return e.type==='exp';});
-    var dots='';
-    if(hasI)dots+='<div style="width:5px;height:5px;border-radius:50%;background:var(--success);margin:0 1px"></div>';
-    if(hasE)dots+='<div style="width:5px;height:5px;border-radius:50%;background:var(--danger);margin:0 1px"></div>';
-    var dsj=JSON.stringify(ds);
-    h+='<div onclick="calDay('+dsj+')" style="background:'+(isT?'var(--blue)':'var(--navy2)')+';border-radius:8px;padding:6px 2px;text-align:center;cursor:'+(ev.length?'pointer':'default')+';">'
-      +'<div style="font-size:13px;font-weight:'+(isT?'800':'600')+';color:'+(isT?'#fff':'var(--text)')+'">'+d2+'</div>'
-      +'<div style="display:flex;justify-content:center;margin-top:2px;min-height:7px">'+dots+'</div>'
-      +'</div>';
-  }
-  h+='</div>'
-    +'<div style="display:flex;gap:12px;margin-top:12px;font-size:11px">'
-      +'<div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div>Vervaldatum</div>'
-      +'<div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--danger)"></div>Uitgave</div>'
-    +'</div>'
-    +'</div>';
+  for(var i=0;i<dow;i++)h+='<div></div>';
+  for(var d2=1;d2<=dim;d2++){var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d2).padStart(2,'0');var ev=evts[ds]||[],isT=(ds===td);var dots='';if(ev.some(function(e){return e.type==='inv';}))dots+='<div style="width:5px;height:5px;border-radius:50%;background:var(--success);margin:0 1px"></div>';if(ev.some(function(e){return e.type==='exp';}))dots+='<div style="width:5px;height:5px;border-radius:50%;background:var(--danger);margin:0 1px"></div>';h+='<div class="cal-day" data-ds="'+ds+'" style="background:'+(isT?'var(--blue)':'var(--navy2)')+';border-radius:8px;padding:6px 2px;text-align:center;cursor:'+(ev.length?'pointer':'default')+'"><div style="font-size:13px;font-weight:'+(isT?800:600)+';color:'+(isT?'#fff':'var(--text)')+'">'+d2+'</div><div style="display:flex;justify-content:center;margin-top:2px;min-height:7px">'+dots+'</div></div>';}
+  h+='</div><div style="display:flex;gap:12px;margin-top:12px;font-size:11px"><div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div>Vervaldatum</div><div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--danger)"></div>Uitgave</div></div></div>';
   document.getElementById('content').innerHTML=h;
+  document.getElementById('cal-prev').addEventListener('click',function(){window._cm--;if(window._cm<0){window._cm=11;window._cy--;}drawCal(window._cy,window._cm);});
+  document.getElementById('cal-next').addEventListener('click',function(){window._cm++;if(window._cm>11){window._cm=0;window._cy++;}drawCal(window._cy,window._cm);});
+  document.querySelectorAll('.cal-day').forEach(function(day){day.addEventListener('click',function(){calDay(this.dataset.ds);});});
 }
-
-function moveCal(dir){window._cm+=dir;if(window._cm>11){window._cm=0;window._cy++;}if(window._cm<0){window._cm=11;window._cy--;}drawCal(window._cy,window._cm);}
-
 function calDay(ds){
-  var evts=window._evts||{};var ev=evts[ds]||[];if(!ev.length)return;
+  var ev=(window._evts||{})[ds]||[];if(!ev.length)return;
   var p=ds.split('-');
-  var rows=ev.map(function(e){
-    var c=e.type==='inv'?'var(--success)':'var(--danger)';
-    var lbl=e.type==='inv'?'Factuur':'Uitgave';
-    return'<div class="row"><div class="row-main"><div class="row-name">'+e.label+'</div><div class="row-sub">'+lbl+(e.status?' · '+e.status:'')+'</div></div><div class="row-amount" style="color:'+c+'">'+fmtEUR(e.amt)+'</div></div>';
-  }).join('');
-  openSheet('<div class="sheet-header"><div class="sheet-title">'+p[2]+' / '+p[1]+' / '+p[0]+'</div><button class="sheet-close" onclick="closeSheet()">Sluiten</button></div><div class="card">'+rows+'</div>');
+  var ov=document.createElement('div');ov.className='sheet-overlay';
+  var sh=document.createElement('div');sh.className='sheet';sh.addEventListener('click',function(e){e.stopPropagation();});ov.addEventListener('click',function(){ov.remove();});
+  var rows=ev.map(function(e){return'<div class="row"><div class="row-main"><div class="row-name">'+e.label+'</div><div class="row-sub">'+(e.type==='inv'?'Factuur':'Uitgave')+(e.status?' · '+e.status:'')+'</div></div><div class="row-amount" style="color:'+(e.type==='inv'?'var(--success)':'var(--danger)')+'">'+fmtEUR(e.amt)+'</div></div>';}).join('');
+  sh.innerHTML='<div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">'+p[2]+'/'+p[1]+'/'+p[0]+'</div><button id="cd-close" class="sheet-close">Sluiten</button></div><div class="card">'+rows+'</div>';
+  ov.appendChild(sh);document.body.appendChild(ov);document.getElementById('cd-close').addEventListener('click',function(){ov.remove();});
 }
 
-// ==================== SETTINGS ====================
 function renderSettings(){
   var klanten=DB.get('customers');
-  var rows=klanten.length?klanten.map(function(c){
-    return'<div class="row">'
-      +'<div class="row-main"><div class="row-name">'+c.name+'</div></div>'
-      +'<button onclick="deleteKlant(\''+c.id+'\')" style="background:rgba(239,68,68,.12);border:none;color:var(--danger);border-radius:7px;padding:5px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">Verwijderen</button>'
-      +'</div>';
-  }).join(''):'<div style="text-align:center;padding:20px;color:var(--muted2);font-size:13px;">Geen klanten</div>';
-
-  document.getElementById('content').innerHTML=
-    '<div class="page">'
-    +'<div class="page-title">Instellingen</div>'
-    +'<div class="card">'
-      +'<div class="card-title">Klanten ('+klanten.length+')</div>'
-      +rows
-    +'</div>'
-    +'</div>';
+  var rows=klanten.length?klanten.map(function(c){return'<div class="row"><div class="row-main"><div class="row-name">'+c.name+'</div></div><button class="del-klant" data-id="'+c.id+'" style="background:rgba(239,68,68,.12);border:none;color:var(--danger);border-radius:7px;padding:5px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">Verwijderen</button></div>';}).join(''):'<div style="text-align:center;padding:20px;color:var(--muted2);font-size:13px;">Geen klanten</div>';
+  document.getElementById('content').innerHTML='<div class="page"><div class="page-title">Instellingen</div><div class="card"><div class="card-title">Klanten ('+klanten.length+')</div>'+rows+'</div></div>';
+  document.querySelectorAll('.del-klant').forEach(function(btn){btn.addEventListener('click',function(){deleteKlant(this.dataset.id);});});
 }
-
 function openKlantForm(){
-  openSheet(
-    '<div class="sheet-header"><div class="sheet-title">Klant toevoegen</div><button class="sheet-close" onclick="closeSheet()">Sluiten</button></div>'
-    +'<label class="fl">Naam</label><input id="kl-naam" class="form-input" placeholder="Klantnaam..."/>'
-    +'<button class="btn-primary" onclick="saveKlant()">Toevoegen</button>'
-    +'<button class="btn-secondary" onclick="closeSheet()">Annuleren</button>'
-  );
+  var ov=document.createElement('div');ov.className='sheet-overlay';var sh=document.createElement('div');sh.className='sheet';sh.addEventListener('click',function(e){e.stopPropagation();});ov.addEventListener('click',function(){ov.remove();});
+  sh.innerHTML='<div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">Klant toevoegen</div><button id="kl-close" class="sheet-close">Sluiten</button></div><label class="fl">Naam</label><input id="kl-naam" class="form-input" placeholder="Klantnaam..."/><button id="kl-save" class="btn-primary">Toevoegen</button><button id="kl-cancel" class="btn-secondary">Annuleren</button>';
+  ov.appendChild(sh);document.body.appendChild(ov);
+  document.getElementById('kl-close').addEventListener('click',function(){ov.remove();});document.getElementById('kl-cancel').addEventListener('click',function(){ov.remove();});
+  document.getElementById('kl-save').addEventListener('click',function(){var naam=(document.getElementById('kl-naam')||{}).value.trim();if(!naam)return;var klanten=DB.get('customers');if(!klanten.some(function(c){return c.name===naam;})){klanten.push({id:uid(),name:naam});DB.set('customers',klanten);}ov.remove();renderSettings();});
   setTimeout(function(){var e=document.getElementById('kl-naam');if(e)e.focus();},150);
 }
+function deleteKlant(id){customConfirm('Klant verwijderen?',function(){DB.set('customers',DB.get('customers').filter(function(c){return c.id!==id;}));renderSettings();});}
 
-function saveKlant(){
-  var naam=(document.getElementById('kl-naam')||{}).value.trim();
-  if(!naam)return;
-  var klanten=DB.get('customers');
-  if(klanten.some(function(c){return c.name===naam;})){closeSheet();return;}
-  klanten.push({id:uid(),name:naam});
-  DB.set('customers',klanten);
-  closeSheet();
-  renderSettings();
-}
-
-function deleteKlant(id){
-  customConfirm('Klant verwijderen?',function(){
-    DB.set('customers',DB.get('customers').filter(function(c){return c.id!==id;}));
-    renderSettings();
-  });
-}
-
-// --- INIT ---
 setTimeout(function(){var e=document.getElementById('login-user');if(e)e.focus();},200);
 </script>
-</div></body>
+</body>
 </html>
