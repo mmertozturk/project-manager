@@ -473,8 +473,7 @@ function openInvoiceForm(inv){
     +'</div>'
     +'<div class="grid2">'
       +'<div><label class="fl">Factuurdatum</label><input type="date" id="f-date" class="form-input" value="'+d.date+'"/></div>'
-      +'<div><label class="fl">Vervaldatum</label><input type="date" id="f-due" class="form-input" value="'+d.dueDate+'"/></div>'
-    +'</div>'
+      +'<label class="fl">Vervaldatum</label>'    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">'    +'<button onclick="setDueDays(7)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+7d</button>'    +'<button onclick="setDueDays(14)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+14d</button>'    +'<button onclick="setDueDays(21)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+21d</button>'    +'<button onclick="setDueDays(28)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+28d</button>'    +'<button onclick="setDueDays(30)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+30d</button>'    +'<button onclick="setDueDays(35)" style="background:var(--navy3);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+35d</button>'    +'</div>'    +'<input type="date" id="f-due" class="form-input" value="'+d.dueDate+'"/>'
     +'<button class="btn-primary" onclick="saveInvoice(\''+( isEdit?d.id:'')+'\')">Opslaan</button>'
     +(isEdit?'<button class="btn-danger" onclick="deleteInvoice(\''+d.id+'\')">Verwijderen</button>':'')
     +'<button class="btn-secondary" onclick="closeSheet()">Annuleren</button>'
@@ -596,6 +595,11 @@ function openExpenseForm(exp,type){
   var tab=type||expTab;
   var isEdit=!!exp;
   var d=exp||{desc:'',amount:'',date:today(),cat:''};
+  var zakCats=['Gereedschap / Materiaal','Auto & Reiskosten','Telefoon & Internet','Software & Abonnementen','Verzekeringen','Opleiding & Cursussen','Marketing & Reclame','Kantoorbenodigdheden','Representatie','Administratie & Boekhouding','Overig zakelijk'];
+  var privCats=['Boodschappen','Huur & Energie','Zorgkosten','Transport','Kleding','Horeca','Overig privé'];
+  var cats=tab==='business'?zakCats:privCats;
+  var catOpts='<option value="">-- Selecteer categorie --</option>'+cats.map(function(c){return'<option value="'+c+'"'+(c===(d.cat||'')?'selected':'')+'>'+c+'</option>';}).join('');
+  var btwOpts=['0%','9%','21%'].map(function(b){return'<option'+(b===(d.btw||'0%')?' selected':'')+'>'+b+'</option>';}).join('');
   openSheet(
     '<div class="sheet-header"><div class="sheet-title">'+(isEdit?'Uitgave bewerken':'Nieuwe uitgave')+'</div><button class="sheet-close" onclick="closeSheet()">Sluiten</button></div>'
     +'<div class="subtab-row">'
@@ -606,7 +610,7 @@ function openExpenseForm(exp,type){
     +'<label class="fl">Bedrag (EUR)</label><input type="text" inputmode="decimal" id="e-amount" class="form-input amount-input" value="'+(d.amount?String(pa(d.amount).toFixed(2)).replace('.',','):'')+'" placeholder="0,00"/>'
     +'<div class="grid2">'
       +'<div><label class="fl">Datum</label><input type="date" id="e-date" class="form-input" value="'+d.date+'"/></div>'
-      +'<div><label class="fl">Categorie</label><input id="e-cat" class="form-input" value="'+(d.cat||'')+'" placeholder="Bijv. Auto..."/></div>'
+      +'<label class="fl">Categorie</label><select id="e-cat" class="form-input">'+catOpts+'</select>'
     +'</div>'
     +'<button class="btn-primary" onclick="saveExpense(\''+( isEdit?d.id:'')+'\')">Opslaan</button>'
     +(isEdit?'<button class="btn-danger" onclick="deleteExpense(\''+d.id+'\',\''+tab+'\')">Verwijderen</button>':'')
