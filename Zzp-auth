@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>ZZP Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0d1b2a;font-family:'Segoe UI',sans-serif;color:#e2eaf4;min-height:100vh;}
+#login{position:fixed;inset:0;background:#0d1b2a;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-box{background:#122035;border:1px solid #1e3352;border-radius:16px;padding:32px 24px;max-width:320px;width:100%;text-align:center;}
+.login-box h1{font-size:18px;font-weight:800;margin-bottom:20px;color:#f59e0b;}
+input{width:100%;background:#0d1b2a;border:1px solid #1e3352;border-radius:10px;padding:12px 14px;color:#e2eaf4;font-size:15px;outline:none;margin-bottom:10px;font-family:inherit;}
+input:focus{border-color:#f59e0b;}
+.btn{width:100%;background:#f59e0b;color:#000;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px;font-family:inherit;}
+#app{display:none;max-width:600px;margin:0 auto;padding:20px;}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #1e3352;}
+.header h1{font-size:18px;font-weight:800;color:#f59e0b;}
+.logout{background:none;border:1px solid #1e3352;color:#4a6a8a;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;}
+.refresh{background:rgba(37,99,235,.15);border:none;color:#3b82f6;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:6px;}
+.section-title{font-size:11px;font-weight:700;color:#4a6a8a;text-transform:uppercase;letter-spacing:.1em;margin:20px 0 10px;}
+.user-card{background:#122035;border:1px solid #1e3352;border-radius:12px;padding:14px;margin-bottom:10px;}
+.user-name{font-size:14px;font-weight:700;}
+.user-un{font-size:11px;color:#4a6a8a;margin-top:2px;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-top:6px;}
+.badge-pending{background:rgba(245,158,11,.15);color:#f59e0b;}
+.badge-approved{background:rgba(16,185,129,.15);color:#34d399;}
+.badge-rejected{background:rgba(239,68,68,.15);color:#ef4444;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.btn-sm{border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;}
+.btn-ok{background:rgba(16,185,129,.15);color:#34d399;}
+.btn-no{background:rgba(239,68,68,.15);color:#ef4444;}
+.btn-warn{background:rgba(245,158,11,.15);color:#f59e0b;}
+.btn-del{background:rgba(100,116,139,.15);color:#94a3b8;}
+.empty{text-align:center;padding:30px;color:#4a6a8a;font-size:13px;}
+.confirm-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.confirm-box{background:#122035;border:1px solid #1e3352;border-radius:16px;padding:24px;max-width:300px;width:100%;text-align:center;}
+.confirm-msg{font-size:15px;font-weight:700;margin-bottom:8px;}
+.confirm-sub{font-size:12px;color:#4a6a8a;margin-bottom:20px;}
+.confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.c-no{background:#1a2d45;border:none;color:#7a9bbf;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
+.c-yes{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="login-box">
+    <h1>⚡ ZZP Admin</h1>
+    <input type="password" id="admin-pwd" placeholder="Admin wachtwoord" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    <div style="color:#ef4444;font-size:12px;margin-bottom:10px;min-height:16px;" id="login-err"></div>
+    <button class="btn" onclick="adminLogin()">Inloggen</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="header">
+    <h1>⚡ ZZP Manager Admin</h1>
+    <div>
+      <button class="refresh" onclick="loadUsers()">↻ Vernieuwen</button>
+      <button class="logout" onclick="adminLogout()">Uitloggen</button>
+    </div>
+  </div>
+  <div id="content"><div class="empty">Laden...</div></div>
+</div>
+
+<script>
+var AUTH_API='https://zzp-auth-api.muminmertozturk.workers.dev';
+var ADMIN_KEY=null;
+
+function adminLogin(){
+  var pwd=document.getElementById('admin-pwd').value;
+  if(!pwd)return;
+  var err=document.getElementById('login-err');
+  err.textContent='Controleren...';
+  fetch(AUTH_API+'/admin/users',{headers:{'X-Admin-Key':pwd}})
+    .then(function(r){if(r.status===401){err.textContent='Onjuist wachtwoord';return null;}return r.json();})
+    .then(function(data){
+      if(!data)return;
+      ADMIN_KEY=pwd;
+      document.getElementById('login').style.display='none';
+      document.getElementById('app').style.display='block';
+      renderUsers(data);
+    }).catch(function(){err.textContent='Verbindingsfout';});
+}
+
+function adminLogout(){
+  ADMIN_KEY=null;
+  document.getElementById('login').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('admin-pwd').value='';
+}
+
+function loadUsers(){
+  document.getElementById('content').innerHTML='<div class="empty">Laden...</div>';
+  fetch(AUTH_API+'/admin/users',{headers:{'X-Admin-Key':ADMIN_KEY}})
+    .then(function(r){return r.json();}).then(renderUsers)
+    .catch(function(){document.getElementById('content').innerHTML='<div class="empty">Verbindingsfout</div>';});
+}
+
+function renderUsers(users){
+  var ct=document.getElementById('content');
+  if(!users.length){ct.innerHTML='<div class="empty">Geen gebruikers</div>';return;}
+  var pending=users.filter(function(u){return u.status==='pending';});
+  var approved=users.filter(function(u){return u.status==='approved';});
+  var rejected=users.filter(function(u){return u.status==='rejected';});
+  var html='';
+  if(pending.length){html+='<div class="section-title">⏳ Wacht op goedkeuring ('+pending.length+')</div>'+pending.map(userCard).join('');}
+  if(approved.length){html+='<div class="section-title">✓ Goedgekeurd ('+approved.length+')</div>'+approved.map(userCard).join('');}
+  if(rejected.length){html+='<div class="section-title">✗ Afgewezen ('+rejected.length+')</div>'+rejected.map(userCard).join('');}
+  ct.innerHTML=html;
+  ct.querySelectorAll('[data-action]').forEach(function(btn){
+    btn.addEventListener('click',function(){doAction(this.dataset.action,this.dataset.username);});
+  });
+}
+
+function userCard(u){
+  var date=u.createdAt?new Date(u.createdAt).toLocaleDateString('nl-NL'):'-';
+  var badgeCls='badge-'+(u.status==='approved'?'approved':u.status==='pending'?'pending':'rejected');
+  var btns='';
+  if(u.status==='pending'){
+    btns+='<button class="btn-sm btn-ok" data-action="approve" data-username="'+u.username+'">Goedkeuren</button>';
+    btns+='<button class="btn-sm btn-no" data-action="reject" data-username="'+u.username+'">Afwijzen</button>';
+  }
+  if(u.status==='approved'){
+    btns+='<button class="btn-sm btn-warn" data-action="revoke" data-username="'+u.username+'">Intrekken</button>';
+  }
+  if(u.status==='rejected'){
+    btns+='<button class="btn-sm btn-ok" data-action="approve" data-username="'+u.username+'">Goedkeuren</button>';
+  }
+  btns+='<button class="btn-sm btn-del" data-action="delete" data-username="'+u.username+'">Verwijderen</button>';
+  return'<div class="user-card">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+      +'<div><div class="user-name">'+u.name+'</div><div class="user-un">@'+u.username+' · '+date+'</div></div>'
+      +'<span class="badge '+badgeCls+'">'+u.status+'</span>'
+    +'</div>'
+    +'<div class="btn-row">'+btns+'</div>'
+    +'</div>';
+}
+
+function doAction(action,username){
+  var msgs={approve:'Goedkeuren?',reject:'Afwijzen?',revoke:'Toegang intrekken?',delete:'Gebruiker verwijderen?'};
+  var ov=document.createElement('div');ov.className='confirm-ov';
+  ov.innerHTML='<div class="confirm-box">'
+    +'<div class="confirm-msg">'+username+'</div>'
+    +'<div class="confirm-sub">'+msgs[action]+'</div>'
+    +'<div class="confirm-btns">'
+      +'<button class="c-no" id="c-no">Annuleren</button>'
+      +'<button class="c-yes" id="c-yes">Bevestigen</button>'
+    +'</div></div>';
+  document.body.appendChild(ov);
+  document.getElementById('c-no').addEventListener('click',function(){ov.remove();});
+  document.getElementById('c-yes').addEventListener('click',function(){
+    ov.remove();
+    fetch(AUTH_API+'/admin/'+action+'/'+username,{method:'POST',headers:{'X-Admin-Key':ADMIN_KEY}})
+      .then(function(){loadUsers();}).catch(function(){alert('Fout');});
+  });
+}
+
+document.getElementById('admin-pwd').focus();
+</script>
+</body>
+</html>
