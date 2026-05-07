@@ -383,11 +383,14 @@ function renderDashboard(){
   document.getElementById('content').innerHTML=
     '<div class="page">'
     +'<div class="page-title">Dashboard</div>'
+  var totalUren=inv.reduce(function(s,i){return s+(i.uren||0);},0);
+
     +'<div class="stat-grid">'
       +'<div class="stat"><div class="stat-label">Ontvangen</div><div class="stat-val" style="color:var(--success)">'+fmtEUR(paid)+'</div></div>'
       +'<div class="stat"><div class="stat-label">Openstaand</div><div class="stat-val" style="color:var(--warn)">'+fmtEUR(pend)+'</div></div>'
       +'<div class="stat"><div class="stat-label">Te laat</div><div class="stat-val" style="color:var(--danger)">'+fmtEUR(late)+'</div></div>'
       +'<div class="stat"><div class="stat-label">Uitgaven</div><div class="stat-val" style="color:var(--muted)">'+fmtEUR(totalExp)+'</div></div>'
+      +'<div class="stat"><div class="stat-label">Totaal uren</div><div class="stat-val" style="color:var(--accent);font-size:18px">'+totalUren.toFixed(1)+' u</div></div>'
     +'</div>'
     +'<div class="stat-grid">'
       +'<div class="stat" style="border-color:#4fc3f744"><div class="stat-label">30% Reservering</div><div class="stat-val" style="color:var(--accent);font-size:18px">'+fmtEUR(res)+'</div></div>'
@@ -479,12 +482,36 @@ function openInvoiceForm(inv){
   setTimeout(function(){var e=document.getElementById('f-client');if(e&&!d.client)e.focus();},150);
 }
 
+function calcInvAmount(){
+  var uren=pa((document.getElementById('f-uren')||{}).value);
+  var tarief=pa((document.getElementById('f-tarief')||{}).value);
+  if(uren&&tarief){
+    var total=(uren*tarief).toFixed(2).replace('.',',');
+    var el=document.getElementById('f-amount');
+    if(el)el.value=total;
+  }
+}
+function setDueDays(n){
+  var dateEl=document.getElementById('f-date');
+  var dueEl=document.getElementById('f-due');
+  if(!dateEl||!dueEl)return;
+  var base=dateEl.value||today();
+  dueEl.value=addDays(base,n);
+}
+function updateDueDate(){
+  // When date changes, recalc due based on current due offset
+  var dateEl=document.getElementById('f-date');
+  if(!dateEl)return;
+  // Just leave due as is, user can click +Xd buttons
+}
 function saveInvoice(id){
   var client=(document.getElementById('f-client')||{}).value.trim();
   var amount=pa((document.getElementById('f-amount')||{}).value);
   if(!client)return;
   if(!amount&&!id)return;
   var inv=DB.get('invoices');
+  var uren=pa((document.getElementById('f-uren')||{}).value)||0;
+  var tarief=pa((document.getElementById('f-tarief')||{}).value)||0;
   var item={
     id:id||uid(),
     client:client,
@@ -492,7 +519,9 @@ function saveInvoice(id){
     date:(document.getElementById('f-date')||{}).value||today(),
     dueDate:(document.getElementById('f-due')||{}).value||addDays(today(),30),
     status:(document.getElementById('f-status')||{}).value||'Beklemende',
-    amount:amount
+    amount:amount,
+    uren:uren||undefined,
+    tarief:tarief||undefined
   };
   if(id){inv=inv.map(function(i){return i.id===id?item:i;});}
   else{inv.push(item);}
@@ -594,7 +623,7 @@ function saveExpense(id){
   var amount=pa((document.getElementById('e-amount')||{}).value);
   if(!desc||!amount)return;
   var exp=DB.get(key);
-  var item={id:id||uid(),desc:desc,amount:amount,date:(document.getElementById('e-date')||{}).value||today(),cat:(document.getElementById('e-cat')||{}).value.trim()};
+  var item={id:id||uid(),desc:desc,amount:amount,date:(document.getElementById('e-date')||{}).value||today(),cat:(document.getElementById('e-cat')||{}).value,btw:(document.getElementById('e-btw')||{}).value||'0%'};
   if(id){exp=exp.map(function(e){return e.id===id?item:e;});}
   else{exp.push(item);}
   DB.set(key,exp);
